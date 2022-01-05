@@ -24,6 +24,7 @@ class MyNewHomePage extends StatelessWidget {
           ),
           body: Column(
             children: [
+              //Container to display the category list
               Container(
                 height: 80,
                 child: Row(
@@ -80,37 +81,53 @@ class MyNewHomePage extends StatelessWidget {
                   ],
                 ),
               ),
-              Expanded(
-                child: GetX<ProductController>(builder: (controller) {
-                  if (controller.products.length > 0) {
-                    return ListView.builder(
-                      itemCount: controller.products.length,
-                      itemBuilder: (BuildContext context, index) {
-                        Product product = controller.products[index];
-                        return ProductWidget(
-                          width: width,
-                          product: product,
-                          controller: controller,
-                        );
+
+              Obx(() {
+                if (productController.loaded.value)
+                  return Expanded(
+                    child: GetX<ProductController>(
+                      builder: (controller) {
+                        if (controller.products.length > 0) {
+                          return ListView.builder(
+                            itemCount: controller.products.length,
+                            itemBuilder: (BuildContext context, index) {
+                              Product product = controller.products[index];
+                              return ProductWidget(
+                                width: width,
+                                product: product,
+                                controller: controller,
+                              );
+                            },
+                          );
+                        } else {
+                          return Container(
+                              child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Nothing to display',
+                                style: TextStyle(
+                                  color: Colors.red,
+                                  fontSize: 18,
+                                ),
+                              ),
+                            ],
+                          ));
+                        }
                       },
-                    );
-                  } else {
-                    return Container(
-                        child: Column(
+                    ),
+                  );
+                else
+                  return Expanded(
+                    child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Text(
-                          'Nothing to display',
-                          style: TextStyle(
-                            color: Colors.red,
-                            fontSize: 18,
-                          ),
-                        ),
+                        CircularProgressIndicator(),
                       ],
-                    ));
-                  }
-                }),
-              ),
+                    ),
+                  );
+              }),
+
               Obx(() =>
                   Text('Total Count ${categoryController.categoryCount}')),
               OutlinedButton(

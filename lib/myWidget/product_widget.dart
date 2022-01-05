@@ -4,6 +4,7 @@ import 'package:flutter_medical_ui/controller/product_controller.dart';
 import 'package:flutter_medical_ui/model/product.dart';
 import 'package:flutter_medical_ui/util/ConstantData.dart';
 import 'package:flutter_medical_ui/util/ConstantWidget.dart';
+import 'package:get/get.dart';
 
 class ProductWidget extends StatelessWidget {
   const ProductWidget({
@@ -59,6 +60,7 @@ class ProductWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String qty = '0';
+    print('Product ${product.productName} in cart : ${product.inCart.value}');
     bool _productPresent =
         int.tryParse(product.cartquantity) == null ? false : true;
     return Card(
@@ -268,59 +270,62 @@ class ProductWidget extends StatelessWidget {
                               height: 10,
                             ),
                             // Add button
-                            Visibility(
-                              visible: !_displayAddBtnOnSide,
-                              child: Row(
-                                children: [
-                                  Visibility(
-                                    visible: !_productPresent,
-                                    child: SizedBox(
-                                      height: 20,
-                                      width: 70,
-                                      child: ElevatedButton(
-                                        onPressed: addToCart,
-                                        child: const Text(
-                                          'Add',
-                                          style: TextStyle(
-                                            fontSize: 10,
+                            Obx(() => Visibility(
+                                  visible: !_displayAddBtnOnSide,
+                                  child: Row(
+                                    children: [
+                                      Visibility(
+                                        visible: !product.inCart.value,
+                                        child: SizedBox(
+                                          height: 20,
+                                          width: 70,
+                                          child: ElevatedButton(
+                                            onPressed: addToCart,
+                                            child: const Text(
+                                              'Add',
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                              ),
+                                            ),
                                           ),
                                         ),
                                       ),
-                                    ),
+                                      // plus minus btn
+                                      Obx(
+                                        () => Visibility(
+                                          visible: product.inCart.value,
+                                          child: Row(
+                                            children: [
+                                              getCartButton(
+                                                  icon: CupertinoIcons.minus,
+                                                  function: deleteItem),
+                                              SizedBox(
+                                                width: 10,
+                                              ),
+                                              getCustomText(
+                                                product.cartquantity,
+                                                ConstantData.mainTextColor,
+                                                2,
+                                                TextAlign.start,
+                                                FontWeight.w500,
+                                                ConstantWidget
+                                                    .getScreenPercentSize(
+                                                        context, 1.8),
+                                              ),
+                                              SizedBox(
+                                                width: 10,
+                                              ),
+                                              getCartButton(
+                                                icon: CupertinoIcons.plus,
+                                                function: addItem,
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
-                                  // plus minus btn
-                                  Visibility(
-                                    visible: _productPresent,
-                                    child: Row(
-                                      children: [
-                                        getCartButton(
-                                            icon: CupertinoIcons.minus,
-                                            function: deleteItem),
-                                        SizedBox(
-                                          width: 10,
-                                        ),
-                                        getCustomText(
-                                          product.cartquantity,
-                                          ConstantData.mainTextColor,
-                                          2,
-                                          TextAlign.start,
-                                          FontWeight.w500,
-                                          ConstantWidget.getScreenPercentSize(
-                                              context, 1.8),
-                                        ),
-                                        SizedBox(
-                                          width: 10,
-                                        ),
-                                        getCartButton(
-                                          icon: CupertinoIcons.plus,
-                                          function: addItem,
-                                        ),
-                                      ],
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
+                                )),
                           ],
                         ),
                       ),
@@ -338,6 +343,7 @@ class ProductWidget extends StatelessWidget {
   addToCart() {
     print(product.cartquantity);
     print('Add to cahrt btn ${product.pid} clicked for add btn');
+    product.inCart(true);
     product.cartquantity = '1';
   }
 

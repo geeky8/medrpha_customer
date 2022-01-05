@@ -4,6 +4,8 @@
 
 import 'dart:convert';
 
+import 'package:get/get.dart';
+
 // Product productFromJson(String str) => Product.fromJson(json.decode(str));
 //
 // String productToJson(Product data) => json.encode(data.toJson());
@@ -49,7 +51,7 @@ class Product {
   String prodsaletypedetails;
   String quantity;
   String cartquantity;
-  bool inCart;
+  var inCart;
 
   factory Product.fromJson(Map<String, dynamic> json) {
     return Product(
@@ -67,8 +69,8 @@ class Product {
       saleqtytypestr: json["saleqtytypestr"],
       prodsaletypedetails: json["prodsaletypedetails"],
       quantity: json["quantity"],
-      cartquantity: json["cartquantity"] ?? '0',
-      inCart: json["cartquantity"] == '' ? false : true,
+      cartquantity: json["cartquantity"] ?? RxString('0'),
+      inCart: json["cartquantity"] == '' ? RxBool(false) : RxBool(true),
     );
   }
 
