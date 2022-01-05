@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_medical_ui/controller/product_controller.dart';
 import 'package:flutter_medical_ui/model/product.dart';
 import 'package:flutter_medical_ui/util/ConstantData.dart';
 import 'package:flutter_medical_ui/util/ConstantWidget.dart';
@@ -9,10 +10,12 @@ class ProductWidget extends StatelessWidget {
     Key key,
     @required this.width,
     @required this.product,
+    @required this.controller,
   }) : super(key: key);
   final _displayAddBtnOnSide = false;
   final double width;
   final Product product;
+  final ProductController controller;
   getCartButton(
       {@required var icon, @required Function function, double height = 20}) {
     // double height = ConstantWidget.getScreenPercentSize(context, 4);
@@ -275,12 +278,7 @@ class ProductWidget extends StatelessWidget {
                                       height: 20,
                                       width: 70,
                                       child: ElevatedButton(
-                                        onPressed: () {
-                                          print(product.cartquantity);
-                                          print(
-                                              'Add to cahrt btn ${product.pid} clicked');
-                                          product.cartquantity = '1';
-                                        },
+                                        onPressed: addToCart,
                                         child: const Text(
                                           'Add',
                                           style: TextStyle(
@@ -297,9 +295,7 @@ class ProductWidget extends StatelessWidget {
                                       children: [
                                         getCartButton(
                                             icon: CupertinoIcons.minus,
-                                            function: () {
-                                              print('minus clicked');
-                                            }),
+                                            function: deleteItem),
                                         SizedBox(
                                           width: 10,
                                         ),
@@ -316,10 +312,9 @@ class ProductWidget extends StatelessWidget {
                                           width: 10,
                                         ),
                                         getCartButton(
-                                            icon: CupertinoIcons.plus,
-                                            function: () {
-                                              print('plus clicked');
-                                            }),
+                                          icon: CupertinoIcons.plus,
+                                          function: addItem,
+                                        ),
                                       ],
                                     ),
                                   )
@@ -338,5 +333,32 @@ class ProductWidget extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  addToCart() {
+    print(product.cartquantity);
+    print('Add to cahrt btn ${product.pid} clicked for add btn');
+    product.cartquantity = '1';
+  }
+
+  addItem() {
+    print('One product added');
+    String x = product.cartquantity;
+    String max = product.quantity;
+    int qty = int.tryParse(x) == null ? 0 : int.parse(x);
+    int maxQty = int.tryParse(max) == null ? 10000 : int.parse(max);
+    print('Max qty : ${maxQty}, Qty: ${qty}');
+    qty < maxQty ? qty++ : qty;
+    product.cartquantity = qty.toString();
+    print(product.cartquantity);
+  }
+
+  deleteItem() {
+    print('One product deleted');
+    String x = product.cartquantity;
+    int qty = int.tryParse(x) == null ? 0 : int.parse(x);
+    qty > 0 ? qty-- : qty;
+    product.cartquantity = qty.toString();
+    print(product.cartquantity);
   }
 }

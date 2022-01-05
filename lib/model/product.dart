@@ -31,6 +31,7 @@ class Product {
     this.prodsaletypedetails,
     this.quantity,
     this.cartquantity,
+    this.inCart,
   });
 
   String pid;
@@ -48,24 +49,28 @@ class Product {
   String prodsaletypedetails;
   String quantity;
   String cartquantity;
+  bool inCart;
 
-  factory Product.fromJson(Map<String, dynamic> json) => Product(
-        pid: json["pid"],
-        wpid: json["wpid"],
-        priceId: json["priceID"],
-        saleprice: json["saleprice"],
-        productImg: json["product_img"],
-        productName: json["product_name"],
-        categorystr: json["categorystr"],
-        compnaystr: json["compnaystr"],
-        newmrp: json["newmrp"],
-        oldmrp: json["oldmrp"],
-        percent: json["percent"],
-        saleqtytypestr: json["saleqtytypestr"],
-        prodsaletypedetails: json["prodsaletypedetails"],
-        quantity: json["quantity"],
-        cartquantity: json["cartquantity"],
-      );
+  factory Product.fromJson(Map<String, dynamic> json) {
+    return Product(
+      pid: json["pid"],
+      wpid: json["wpid"],
+      priceId: json["priceID"],
+      saleprice: json["saleprice"],
+      productImg: json["product_img"],
+      productName: json["product_name"],
+      categorystr: json["categorystr"],
+      compnaystr: json["compnaystr"],
+      newmrp: json["newmrp"],
+      oldmrp: json["oldmrp"],
+      percent: json["percent"],
+      saleqtytypestr: json["saleqtytypestr"],
+      prodsaletypedetails: json["prodsaletypedetails"],
+      quantity: json["quantity"],
+      cartquantity: json["cartquantity"] ?? '0',
+      inCart: json["cartquantity"] == '' ? false : true,
+    );
+  }
 
   Map<String, dynamic> toJson() => {
         "pid": pid,
@@ -83,5 +88,6 @@ class Product {
         "prodsaletypedetails": prodsaletypedetails,
         "quantity": quantity,
         "cartquantity": cartquantity,
+        "inCart": inCart,
       };
 }
