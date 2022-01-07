@@ -1,7 +1,8 @@
 import 'package:flutter_medical_ui/apicalls/api_service.dart';
 import 'package:flutter_medical_ui/model/product.dart';
-import 'package:flutter_medical_ui/myutil/common_function.dart';
 import 'package:get/get.dart';
+
+import 'local_session_controller.dart';
 
 class ProductController extends GetxController {
   String medicineName, categoryId;
@@ -32,8 +33,8 @@ class ProductController extends GetxController {
 
   void getProductList({catcheck = '', term = ''}) async {
     List<Product> MyProductList = [];
-    CommonFunctions cf = CommonFunctions();
-    _sessionID = await cf.isSessionActive();
+    LocalSessionController ls = Get.find<LocalSessionController>();
+    String _sessionID = ls.getSessionValue();
     if (_sessionID == 'no' || _sessionID == '') {
       print('session missing');
       products.value = MyProductList;

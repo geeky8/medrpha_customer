@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_medical_ui/controller/category_controller.dart';
+import 'package:flutter_medical_ui/controller/local_session_controller.dart';
 import 'package:flutter_medical_ui/controller/product_controller.dart';
 import 'package:flutter_medical_ui/model/category.dart';
 import 'package:flutter_medical_ui/model/product.dart';
 import 'package:flutter_medical_ui/myWidget/product_widget.dart';
-import 'package:flutter_medical_ui/myutil/common_function.dart';
 import 'package:get/get.dart';
 
 class MyNewHomePage extends StatelessWidget {
@@ -14,8 +14,8 @@ class MyNewHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    CommonFunctions cf = CommonFunctions();
-    // int userType =  cf.showPrice();
+    LocalSessionController ls = Get.find<LocalSessionController>();
+    String _session = ls.getSessionValue();
     double width = MediaQuery.of(context).size.width;
     return SafeArea(
       child: Scaffold(
@@ -95,7 +95,7 @@ class MyNewHomePage extends StatelessWidget {
                               return ProductWidget(
                                 width: width,
                                 product: product,
-                                controller: controller,
+                                session: _session,
                               );
                             },
                           );

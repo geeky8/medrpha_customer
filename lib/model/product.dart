@@ -50,10 +50,21 @@ class Product {
   String saleqtytypestr;
   String prodsaletypedetails;
   String quantity;
-  String cartquantity;
+  var cartquantity;
   var inCart;
 
   factory Product.fromJson(Map<String, dynamic> json) {
+    // print('Cart Qty for ${json["product_name"]} is ${json["cartquantity"]}');
+    var qty, incrt;
+    if (json["cartquantity"] == null || json["cartquantity"] == '') {
+      print(json["cartquantity"]);
+      qty = RxString("0");
+      incrt = RxBool(false);
+    } else {
+      qty = RxString(json["cartquantity"]);
+      incrt = RxBool(true);
+    }
+
     return Product(
       pid: json["pid"],
       wpid: json["wpid"],
@@ -69,8 +80,8 @@ class Product {
       saleqtytypestr: json["saleqtytypestr"],
       prodsaletypedetails: json["prodsaletypedetails"],
       quantity: json["quantity"],
-      cartquantity: json["cartquantity"] ?? RxString('0'),
-      inCart: json["cartquantity"] == '' ? RxBool(false) : RxBool(true),
+      cartquantity: qty,
+      inCart: incrt,
     );
   }
 

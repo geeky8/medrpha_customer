@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_medical_ui/controller/product_controller.dart';
+import 'package:flutter_medical_ui/apicalls/api_service.dart';
 import 'package:flutter_medical_ui/model/product.dart';
 import 'package:flutter_medical_ui/util/ConstantData.dart';
 import 'package:flutter_medical_ui/util/ConstantWidget.dart';
@@ -11,12 +11,12 @@ class ProductWidget extends StatelessWidget {
     Key key,
     @required this.width,
     @required this.product,
-    @required this.controller,
+    @required this.session,
   }) : super(key: key);
   final _displayAddBtnOnSide = false;
   final double width;
   final Product product;
-  final ProductController controller;
+  final String session;
   getCartButton(
       {@required var icon, @required Function function, double height = 20}) {
     // double height = ConstantWidget.getScreenPercentSize(context, 4);
@@ -60,9 +60,9 @@ class ProductWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String qty = '0';
-    print('Product ${product.productName} in cart : ${product.inCart.value}');
+    // print('Product ${product.productName} in cart : ${product.inCart.value}');
     bool _productPresent =
-        int.tryParse(product.cartquantity) == null ? false : true;
+        int.tryParse(product.cartquantity.value) == null ? false : true;
     return Card(
       margin: EdgeInsets.all(3),
       child: Container(
@@ -183,8 +183,8 @@ class ProductWidget extends StatelessWidget {
                                           child: ElevatedButton(
                                             onPressed: () {
                                               print(
-                                                  'Add to cahrt btn ${product.cartquantity}');
-                                              product.cartquantity = '1';
+                                                  'Add to cahrt btn ${product.cartquantity.value}');
+                                              product.cartquantity.value = '1';
                                             },
                                             child: const Text(
                                               'Add',
@@ -208,7 +208,7 @@ class ProductWidget extends StatelessWidget {
                                               width: 10,
                                             ),
                                             getCustomText(
-                                              product.cartquantity,
+                                              product.cartquantity.value,
                                               ConstantData.mainTextColor,
                                               2,
                                               TextAlign.start,
@@ -303,7 +303,7 @@ class ProductWidget extends StatelessWidget {
                                                 width: 10,
                                               ),
                                               getCustomText(
-                                                product.cartquantity,
+                                                product.cartquantity.value,
                                                 ConstantData.mainTextColor,
                                                 2,
                                                 TextAlign.start,
@@ -317,7 +317,7 @@ class ProductWidget extends StatelessWidget {
                                               ),
                                               getCartButton(
                                                 icon: CupertinoIcons.plus,
-                                                function: addItem,
+                                                function: plusItem,
                                               ),
                                             ],
                                           ),
@@ -340,31 +340,74 @@ class ProductWidget extends StatelessWidget {
     );
   }
 
-  addToCart() {
-    print(product.cartquantity);
-    print('Add to cahrt btn ${product.pid} clicked for add btn');
-    product.inCart(true);
-    product.cartquantity = '1';
+  addToCart() async {
+    // print(product.cartquantity.value);
+    // print('Add to cahrt btn ${product.pid} clicked for add btn');
+    // product.inCart(true);
+    product.cartquantity.value = '1';
+    String max = product.quantity;
+    int maxQty = int.tryParse(max) == null ? 0 : int.parse(max);
+    if (maxQty > 0) {
+      int responseStatus =
+          await ApiService.addNewItem(product: product, session: session);
+      print('Response ststus :${responseStatus}');
+      product.cartquantity.value = responseStatus.toString();
+      product.inCart(true);
+    } else {
+      print('Item out of stocl');
+    }
   }
 
-  addItem() {
+  plusItem() async {
     print('One product added');
-    String x = product.cartquantity;
+    String x = product.cartquantity.value;
     String max = product.quantity;
     int qty = int.tryParse(x) == null ? 0 : int.parse(x);
     int maxQty = int.tryParse(max) == null ? 10000 : int.parse(max);
-    print('Max qty : ${maxQty}, Qty: ${qty}');
-    qty < maxQty ? qty++ : qty;
-    product.cartquantity = qty.toString();
-    print(product.cartquantity);
+    // print('Max qty : ${maxQty}, Qty: ${qty}');
+    if (qty < maxQty) {
+      var newProducts =
+          await ApiService.plusItem(product: product, session: session);
+      if (newProducts == 1) {
+        print('New product added successful');
+        qty++;
+        product.cartquantity.value = qty.toString();
+        product.inCart(true);
+      } else {
+        print('Product status not 1');
+      }
+    } else {
+      print('Product max qty issue');
+      //do nothing
+    }
   }
 
-  deleteItem() {
+  deleteItem() async {
     print('One product deleted');
-    String x = product.cartquantity;
+    String x = product.cartquantity.value;
     int qty = int.tryParse(x) == null ? 0 : int.parse(x);
-    qty > 0 ? qty-- : qty;
-    product.cartquantity = qty.toString();
-    print(product.cartquantity);
+    bool updateQty = false;
+    if (qty > 1) {
+      //call cartMinus
+      var newProducts =
+          await ApiService.minusItem(product: product, session: session);
+      if (newProducts == 1) {
+        updateQty = true;
+      }
+    } else {
+      //call deteleCart
+      var delStatus =
+          await ApiService.deleteItem(product: product, session: session);
+      if (delStatus == 1) {
+        updateQty = true;
+      }
+    }
+    if (updateQty) {
+      qty > 0 ? qty-- : qty;
+      if (qty == 0) {
+        product.inCart(false);
+      }
+      product.cartquantity.value = qty.toString();
+    }
   }
 }

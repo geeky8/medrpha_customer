@@ -1,3 +1,4 @@
+import 'package:flutter_medical_ui/model/local_session.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class PrefData {
@@ -12,6 +13,17 @@ class PrefData {
   static String regCompleted = medDefault + "regCompleted";
   static String adminApproved = medDefault + "adminApproved";
   static String pin = medDefault + "pin";
+
+  static Future<LocalSession> getAllLocalData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String session = prefs.getString(sessionID);
+    String mobile = prefs.getString(mobileNo) ?? '';
+    String newpin = prefs.getString(pin) ?? '';
+    bool regC = prefs.getBool(regCompleted) ?? false;
+    bool adminapp = prefs.getBool(adminApproved) ?? false;
+    LocalSession ls = LocalSession(session, mobile, regC, adminapp, newpin);
+    return ls;
+  }
 
   static getSessionID() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();

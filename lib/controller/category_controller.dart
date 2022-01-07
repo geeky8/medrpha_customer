@@ -1,4 +1,5 @@
 import 'package:flutter_medical_ui/apicalls/api_service.dart';
+import 'package:flutter_medical_ui/controller/local_session_controller.dart';
 import 'package:flutter_medical_ui/model/category.dart';
 import 'package:flutter_medical_ui/myutil/common_function.dart';
 import 'package:get/get.dart';
@@ -12,10 +13,8 @@ class CategoryController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    print('Value before call ${categoryList.length}');
     getCategories();
     updateCatCount();
-    print('Value after call ${categoryList.length}');
   }
 
   updateCatCount() {
@@ -31,7 +30,8 @@ class CategoryController extends GetxController {
   Future getCategories() async {
     CommonFunctions cf = CommonFunctions();
     List<Category> tempCategory = [];
-    _sessionID = await cf.isSessionActive();
+    LocalSessionController ls = Get.find<LocalSessionController>();
+    String _sessionID = ls.getSessionValue();
     if (_sessionID == 'no' || _sessionID == '') {
       print('session missing');
       categoryList = tempCategory;

@@ -3,10 +3,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_medical_ui/controller/local_session_controller.dart';
 import 'package:flutter_medical_ui/util/ConstantData.dart';
 import 'package:flutter_medical_ui/util/DataFile.dart';
 import 'package:flutter_medical_ui/util/PrefData.dart';
 import 'package:flutter_medical_ui/view/my_getx_home_page.dart';
+import 'package:get/get.dart';
 
 import 'IntroPage.dart';
 import 'MySignUpPage.dart';
@@ -61,6 +63,8 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   get subCategoryModelList => null;
+  LocalSessionController sessionController =
+      Get.put(LocalSessionController(), permanent: true);
 
   @override
   void initState() {
@@ -73,17 +77,14 @@ class _MyHomePageState extends State<MyHomePage> {
   bool _isSignIn = false;
   bool _isIntro = false;
   String _session_id;
-  String _mobileNo;
-  bool _regCompleted;
-  bool _adminApproved;
-  String _pin;
 
   void getLocalData() async {
+    //print('Printing session data ${sessionController.mySession.session}');
+    int del = Get.find<LocalSessionController>().test;
+    print('The value of test from local session : ${del}');
+    // print(
+    //     'The value of mobile number n session ${Get.find<LocalSessionController>().mySession.mobileNo} , ${Get.find<LocalSessionController>().mySession.session}');
     _session_id = await PrefData.getSessionID();
-    _mobileNo = await PrefData.getMobileNo();
-    _regCompleted = await PrefData.getRegCompleted();
-    _adminApproved = await PrefData.getAdminApproved();
-    _pin = await PrefData.getPin();
     int themMode = await PrefData.getThemeMode();
     ConstantData.setThemePosition();
     SystemChrome.setSystemUIOverlayStyle((themMode == 0)
@@ -105,7 +106,7 @@ class _MyHomePageState extends State<MyHomePage> {
               builder: (context) => MySignUpPage(),
             ));
       } else {
-        Timer(Duration(milliseconds: 800), () {
+        Timer(Duration(milliseconds: 1700), () {
           List<SubCategoryModel> subCategoryModelList1 =
               DataFile.getSubCategoryModel();
           Navigator.pushReplacement(
