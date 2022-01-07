@@ -130,9 +130,17 @@ class MyNewHomePage extends StatelessWidget {
 
               Obx(() =>
                   Text('Total Count ${categoryController.categoryCount}')),
-              OutlinedButton(
-                onPressed: categoryController.getCatCount,
-                child: const Text('Increment'),
+              Row(
+                children: [
+                  OutlinedButton(
+                    onPressed: categoryController.getCatCount,
+                    child: const Text('Cat Cnt'),
+                  ),
+                  OutlinedButton(
+                    onPressed: productController.testToggleVisibility,
+                    child: const Text('Toggle visibility'),
+                  ),
+                ],
               ),
               SizedBox(
                 height: 10,

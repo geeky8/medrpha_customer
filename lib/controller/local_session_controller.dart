@@ -1,9 +1,8 @@
-import 'package:flutter_medical_ui/model/local_session.dart';
 import 'package:flutter_medical_ui/util/PrefData.dart';
 import 'package:get/get.dart';
 
 class LocalSessionController extends GetxController {
-  LocalSession mySession;
+  var mySession;
   int test = 11;
 
   @override
@@ -20,5 +19,13 @@ class LocalSessionController extends GetxController {
 
   String getSessionValue() {
     return mySession.session;
+  }
+
+  bool getProfileCompletionStatus() {
+    return mySession.regCompleted;
+  }
+
+  bool getAdminAprovalStatus() {
+    return mySession.adminApproved;
   }
 }

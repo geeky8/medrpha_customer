@@ -10,6 +10,7 @@ class ProductController extends GetxController {
   String _sessionID;
   var cartCount = RxInt(0);
   var loaded = false.obs;
+  var showProduct = false.obs;
   @override
   void onInit() {
     super.onInit();
@@ -31,6 +32,14 @@ class ProductController extends GetxController {
     print(cartCount);
   }
 
+  testToggleVisibility() {
+    if (showProduct.value) {
+      showProduct(false);
+    } else {
+      showProduct(true);
+    }
+  }
+
   void getProductList({catcheck = '', term = ''}) async {
     List<Product> MyProductList = [];
     LocalSessionController ls = Get.find<LocalSessionController>();
@@ -47,6 +56,10 @@ class ProductController extends GetxController {
           products.assignAll(newProducts);
         }
       } finally {
+        showProduct =
+            ls.getProfileCompletionStatus() && ls.getAdminAprovalStatus()
+                ? RxBool(true)
+                : RxBool(false);
         loaded.value = true;
       }
     }

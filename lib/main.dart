@@ -119,6 +119,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 // builder: (context) => TestProduct(),
                 //new homepage new Style
                 builder: (context) => MyNewHomePage(),
+
+                //this is to check teh old pages
+                //builder: (context) => TabWidget(),
               ));
         });
       }

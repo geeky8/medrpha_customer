@@ -14,17 +14,12 @@ class CategoryController extends GetxController {
   void onInit() {
     super.onInit();
     getCategories();
-    updateCatCount();
-  }
-
-  updateCatCount() {
-    categoryCount(categoryList.length);
   }
 
   getCatCount() {
-    categoryCount = RxInt(categoryList.length);
+    print('Before update : ${categoryCount}');
+    categoryCount(categoryList.length);
     print(categoryCount);
-    update();
   }
 
   Future getCategories() async {
@@ -44,6 +39,7 @@ class CategoryController extends GetxController {
           categoryList.assignAll(cats);
         }
       } finally {
+        getCatCount();
         loaded(true);
       }
     }

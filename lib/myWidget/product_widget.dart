@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_medical_ui/apicalls/api_service.dart';
+import 'package:flutter_medical_ui/controller/product_controller.dart';
 import 'package:flutter_medical_ui/model/product.dart';
 import 'package:flutter_medical_ui/util/ConstantData.dart';
 import 'package:flutter_medical_ui/util/ConstantWidget.dart';
@@ -13,12 +14,13 @@ class ProductWidget extends StatelessWidget {
     @required this.product,
     @required this.session,
   }) : super(key: key);
+
   final _displayAddBtnOnSide = false;
   final double width;
   final Product product;
   final String session;
   getCartButton(
-      {@required var icon, @required Function function, double height = 20}) {
+      {@required var icon, @required Function function, double height = 19}) {
     // double height = ConstantWidget.getScreenPercentSize(context, 4);
     return InkWell(
       child: Container(
@@ -60,9 +62,13 @@ class ProductWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String qty = '0';
+    // final LocalSessionController ls = Get.find<LocalSessionController>();
+    ProductController pc = Get.find<ProductController>();
+
+    // final String _session = ls.getSessionValue();
+    // final bool regComplete = ls.getProfileCompletionStatus();
+    // final bool adminApproval = ls.getAdminAprovalStatus();
     // print('Product ${product.productName} in cart : ${product.inCart.value}');
-    bool _productPresent =
-        int.tryParse(product.cartquantity.value) == null ? false : true;
     return Card(
       margin: EdgeInsets.all(3),
       child: Container(
@@ -123,154 +129,97 @@ class ProductWidget extends StatelessWidget {
                       SizedBox(
                         height: 5,
                       ),
-                      Row(
-                        children: [
-                          Text(
-                            'Available Qty:',
-                            style: TextStyle(
-                              color: Colors.blueGrey,
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          Text(
-                            product.quantity,
-                            style: TextStyle(
-                              color: Colors.blueGrey,
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 5,
-                      ),
-                      Container(
-                        child: Column(
-                          children: [
-                            Row(
-                              mainAxisSize: MainAxisSize.max,
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      Obx(
+                        () => Visibility(
+                          visible: pc.showProduct.value,
+                          child: Container(
+                            child: Column(
                               children: [
-                                Text(
-                                  product.newmrp,
-                                  style: TextStyle(
-                                    color: Colors.pinkAccent.shade400,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                //Add to cart plus minus button
-                                SizedBox(
-                                  width: 15,
-                                  height: 25,
-                                ),
-                                // Add button clicked
-                                Visibility(
-                                  visible: _displayAddBtnOnSide,
-                                  child: Row(
-                                    children: [
-                                      //Add to cart btn
-                                      Visibility(
-                                        visible: !_productPresent,
-                                        child: SizedBox(
-                                          height: 20,
-                                          width: 70,
-                                          child: ElevatedButton(
-                                            onPressed: () {
-                                              print(
-                                                  'Add to cahrt btn ${product.cartquantity.value}');
-                                              product.cartquantity.value = '1';
-                                            },
-                                            child: const Text(
-                                              'Add',
-                                              style: TextStyle(
-                                                fontSize: 10,
-                                              ),
-                                            ),
-                                          ),
-                                        ),
+                                Row(
+                                  children: [
+                                    Text(
+                                      'Available Qty:',
+                                      style: TextStyle(
+                                        color: Colors.blueGrey,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
                                       ),
-                                      Visibility(
-                                        visible: _productPresent,
-                                        child: Row(
-                                          children: [
-                                            getCartButton(
-                                                icon: CupertinoIcons.minus,
-                                                function: () {
-                                                  print('minus clicked');
-                                                }),
-                                            SizedBox(
-                                              width: 10,
-                                            ),
-                                            getCustomText(
-                                              product.cartquantity.value,
-                                              ConstantData.mainTextColor,
-                                              2,
-                                              TextAlign.start,
-                                              FontWeight.w500,
-                                              ConstantWidget
-                                                  .getScreenPercentSize(
-                                                      context, 1.8),
-                                            ),
-                                            SizedBox(
-                                              width: 10,
-                                            ),
-                                            getCartButton(
-                                                icon: CupertinoIcons.plus,
-                                                function: () {
-                                                  print('plus clicked');
-                                                }),
-                                          ],
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'MRP : ',
-                                  style: TextStyle(
-                                    color: Colors.black45,
-                                    fontSize: 16,
-                                    fontStyle: FontStyle.normal,
-                                  ),
-                                ),
-                                Text(
-                                  product.oldmrp,
-                                  style: TextStyle(
-                                    color: Colors.black45,
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    decoration: TextDecoration.lineThrough,
-                                  ),
+                                    ),
+                                    SizedBox(
+                                      width: 10,
+                                    ),
+                                    Text(
+                                      product.quantity,
+                                      style: TextStyle(
+                                        color: Colors.blueGrey,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                                 SizedBox(
-                                  width: 20,
+                                  height: 5,
                                 ),
-                                Text(
-                                  product.percent,
-                                  style: TextStyle(
-                                    color: Colors.greenAccent.shade700,
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                                Row(
+                                  mainAxisSize: MainAxisSize.max,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      product.newmrp,
+                                      style: TextStyle(
+                                        color: Colors.pinkAccent.shade400,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    //Add to cart plus minus button
+                                    SizedBox(
+                                      width: 15,
+                                      height: 25,
+                                    ),
+                                    // Add button clicked
+                                  ],
                                 ),
-                              ],
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            // Add button
-                            Obx(() => Visibility(
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'MRP : ',
+                                      style: TextStyle(
+                                        color: Colors.black45,
+                                        fontSize: 16,
+                                        fontStyle: FontStyle.normal,
+                                      ),
+                                    ),
+                                    Text(
+                                      product.oldmrp,
+                                      style: TextStyle(
+                                        color: Colors.black45,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                        decoration: TextDecoration.lineThrough,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 20,
+                                    ),
+                                    Text(
+                                      product.percent,
+                                      style: TextStyle(
+                                        color: Colors.greenAccent.shade700,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                // Add button
+                                Visibility(
                                   visible: !_displayAddBtnOnSide,
                                   child: Row(
                                     children: [
@@ -291,18 +240,38 @@ class ProductWidget extends StatelessWidget {
                                         ),
                                       ),
                                       // plus minus btn
-                                      Obx(
-                                        () => Visibility(
-                                          visible: product.inCart.value,
-                                          child: Row(
-                                            children: [
-                                              getCartButton(
-                                                  icon: CupertinoIcons.minus,
-                                                  function: deleteItem),
-                                              SizedBox(
-                                                width: 10,
-                                              ),
-                                              getCustomText(
+                                      Visibility(
+                                        visible: product.inCart.value,
+                                        child: Row(
+                                          children: [
+                                            getCartButton(
+                                                icon: CupertinoIcons.minus,
+                                                function: deleteItem),
+                                            SizedBox(
+                                              width: 10,
+                                            ),
+                                            GestureDetector(
+                                              onTap: () {
+                                                print("Open as text box");
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                  SnackBar(
+                                                    content: Row(
+                                                      children: [
+                                                        const Text(
+                                                            'Enter Quanlity'),
+                                                      ],
+                                                    ),
+                                                    action: SnackBarAction(
+                                                      label: 'Action',
+                                                      onPressed: () {
+                                                        // Code to execute.
+                                                      },
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                              child: getCustomText(
                                                 product.cartquantity.value,
                                                 ConstantData.mainTextColor,
                                                 2,
@@ -312,21 +281,23 @@ class ProductWidget extends StatelessWidget {
                                                     .getScreenPercentSize(
                                                         context, 1.8),
                                               ),
-                                              SizedBox(
-                                                width: 10,
-                                              ),
-                                              getCartButton(
-                                                icon: CupertinoIcons.plus,
-                                                function: plusItem,
-                                              ),
-                                            ],
-                                          ),
+                                            ),
+                                            SizedBox(
+                                              width: 10,
+                                            ),
+                                            getCartButton(
+                                              icon: CupertinoIcons.plus,
+                                              function: plusItem,
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ],
                                   ),
-                                )),
-                          ],
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
                     ],
