@@ -1,6 +1,11 @@
 # flutter_medical_ui
 
-A new Flutter application.
+The medical UI is created using the CetX framework. Its is cleint end App with the following features:-
+1. Local Authentication
+2. Mobile OTP verification
+3. Getx implimentation for state Management
+
+This can be used as the starting poing for any shopping App like iMenu
 
 ## Getting Started
 
