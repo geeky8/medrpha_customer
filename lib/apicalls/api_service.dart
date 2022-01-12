@@ -2,7 +2,11 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_medical_ui/model/category.dart';
+import 'package:flutter_medical_ui/model/city.dart';
+import 'package:flutter_medical_ui/model/country.dart';
+import 'package:flutter_medical_ui/model/pin.dart';
 import 'package:flutter_medical_ui/model/product.dart';
+import 'package:flutter_medical_ui/model/state.dart';
 import 'package:http/http.dart' as http;
 
 class ApiService {
@@ -52,6 +56,41 @@ class ApiService {
       "quantity": product.quantity,
     };
     var url = Uri.parse('https://api.medrpha.com/api/cart/cartplus');
+    var response = await client.post(url, body: requestBody);
+    if (response.statusCode == 200) {
+      var jsonObj = response.body;
+      var jsonData = json.decode(jsonObj.toString());
+      // print(jsonData);
+      if (jsonData['status'] == "0") {
+        //The session id is incorrect
+        return 0;
+      } else {
+        if (jsonData['status'] == "1") {
+          //product successfully added
+          return 1;
+        } else {
+          return int.parse(jsonData['quantity']);
+        }
+      }
+    } else {
+      return 0;
+    }
+  }
+
+  static Future<int> updateQuantityforItem(
+      {@required Product product,
+      @required String session,
+      @required newQuantity}) async {
+    print(
+        'The product to Update is ${product.productName} for session ${session}');
+    Map requestBody = {
+      "sessid": session,
+      "pid": product.pid,
+      "priceID": product.priceId,
+      "quantity": product.quantity,
+      "qtyfield": newQuantity
+    };
+    var url = Uri.parse('https://api.medrpha.com/api/cart/updatequantity');
     var response = await client.post(url, body: requestBody);
     if (response.statusCode == 200) {
       var jsonObj = response.body;
@@ -159,6 +198,108 @@ class ApiService {
       }
     } else {
       return tempCategory;
+    }
+  }
+
+  static Future<List<Country>> getAllCountry({String sessionID}) async {
+    List<Country> tempCountry = [];
+    var url = Uri.parse('https://api.medrpha.com/api/register/getcountry');
+    Map jsonBody = {
+      "sessid": sessionID,
+    };
+    // print('Now calling getCAt with ${jsonBody}');
+    var response = await client.post(url, body: jsonBody);
+    // print('Response status: ${response.statusCode}');
+
+    if (response.statusCode == 200) {
+      var jsonObj = response.body;
+      var jsonData = json.decode(jsonObj.toString());
+      // print(jsonData);
+      if (jsonData['status'] == "0" || jsonData['status'] == null) {
+        return tempCountry;
+      } else {
+        var dataArray = jsonData['data'];
+        return dataArray == null
+            ? tempCountry
+            : countryFromJson(json.encode(dataArray));
+      }
+    } else {
+      return tempCountry;
+    }
+  }
+
+  static Future<List<States>> getAllState({String sessionID}) async {
+    List<States> tempState = [];
+    var url = Uri.parse('https://api.medrpha.com/api/register/getstateall');
+    Map jsonBody = {
+      "sessid": sessionID,
+    };
+    var response = await client.post(url, body: jsonBody);
+
+    if (response.statusCode == 200) {
+      var jsonObj = response.body;
+      var jsonData = json.decode(jsonObj.toString());
+      // print(jsonData);
+      if (jsonData['status'] == "0" || jsonData['status'] == null) {
+        return tempState;
+      } else {
+        var dataArray = jsonData['data'];
+        return dataArray == null
+            ? tempState
+            : statesFromJson(json.encode(dataArray));
+      }
+    } else {
+      return tempState;
+    }
+  }
+
+  static Future<List<City>> getAllCity({String sessionID}) async {
+    List<City> tempCity = [];
+    var url = Uri.parse('https://api.medrpha.com/api/register/getcityall');
+    Map jsonBody = {
+      "sessid": sessionID,
+    };
+    var response = await client.post(url, body: jsonBody);
+
+    if (response.statusCode == 200) {
+      var jsonObj = response.body;
+      var jsonData = json.decode(jsonObj.toString());
+      // print(jsonData);
+      if (jsonData['status'] == "0" || jsonData['status'] == null) {
+        return tempCity;
+      } else {
+        var dataArray = jsonData['data'];
+        return dataArray == null
+            ? tempCity
+            : cityFromJson(json.encode(dataArray));
+      }
+    } else {
+      return tempCity;
+    }
+  }
+
+  static Future<List<Pin>> getAllPin({String sessionID}) async {
+    List<Pin> tempPin = [];
+    var url = Uri.parse('https://api.medrpha.com/api/register/getpincodeall');
+    Map jsonBody = {
+      "sessid": sessionID,
+    };
+    var response = await client.post(url, body: jsonBody);
+
+    if (response.statusCode == 200) {
+      var jsonObj = response.body;
+      var jsonData = json.decode(jsonObj.toString());
+      // print(jsonData);
+      if (jsonData['status'] == "0" || jsonData['status'] == null) {
+        return tempPin;
+      } else {
+        var dataArray = jsonData['data'];
+        return dataArray == null
+            ? tempPin
+            : pinFromJson(json.encode(dataArray));
+      }
+    } else {
+      return tempPin;
     }
   }
 

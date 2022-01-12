@@ -21,21 +21,10 @@ class PrefData {
     String newpin = prefs.getString(pin) ?? '';
     bool regC = prefs.getBool(regCompleted) ?? false;
     bool adminapp = prefs.getBool(adminApproved) ?? false;
-    // var regC;
-    // var rc = prefs.getBool(regCompleted);
-    // // if (rc == null || rc == '') {
-    // //   regC = RxBool(false);
-    // // } else {
-    // //   regC = RxBool(true);
-    // // }
-    // // var aa = prefs.getBool(adminApproved);
-    // // var adminapp;
-    // // if (aa == null || aa == '') {
-    // //   adminapp = RxBool(false);
-    // // } else {
-    // //   adminapp = RxBool(true);
-    // // }
-    LocalSession ls = LocalSession(session, mobile, regC, adminapp, newpin);
+
+    LocalSession ls =
+        await LocalSession(session, mobile, regC, adminapp, newpin);
+    print('Local data received');
     return ls;
   }
 

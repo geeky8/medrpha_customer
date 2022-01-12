@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_medical_ui/apicalls/api_service.dart';
 import 'package:flutter_medical_ui/controller/product_controller.dart';
 import 'package:flutter_medical_ui/model/product.dart';
@@ -8,19 +10,25 @@ import 'package:flutter_medical_ui/util/ConstantWidget.dart';
 import 'package:get/get.dart';
 
 class ProductWidget extends StatelessWidget {
-  const ProductWidget({
+  TextEditingController qtyController = TextEditingController();
+  ProductWidget({
     Key key,
     @required this.width,
     @required this.product,
     @required this.session,
   }) : super(key: key);
 
-  final _displayAddBtnOnSide = false;
   final double width;
   final Product product;
   final String session;
+  static const bool showInputBox = false;
+  String _beforeChange;
   getCartButton(
-      {@required var icon, @required Function function, double height = 19}) {
+      {@required var icon,
+      @required Function function,
+      double height = 21,
+      Color color = Colors.grey,
+      bool delBtn = false}) {
     // double height = ConstantWidget.getScreenPercentSize(context, 4);
     return InkWell(
       child: Container(
@@ -29,14 +37,13 @@ class ProductWidget extends StatelessWidget {
         width: height,
         decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: Colors.transparent,
+            color: delBtn ? Colors.red : Colors.transparent,
             border: Border.all(
-                color: Colors.grey,
-                width: ConstantWidget.getPercentSize(height, 2))),
+                color: color, width: ConstantWidget.getPercentSize(height, 1))),
         child: Icon(
           icon,
-          size: ConstantWidget.getPercentSize(height, 50),
-          color: Colors.grey,
+          size: ConstantWidget.getPercentSize(height, 60),
+          color: color,
         ),
       ),
       onTap: function,
@@ -64,7 +71,7 @@ class ProductWidget extends StatelessWidget {
     String qty = '0';
     // final LocalSessionController ls = Get.find<LocalSessionController>();
     ProductController pc = Get.find<ProductController>();
-
+    qtyController.text = product.cartquantity.value;
     // final String _session = ls.getSessionValue();
     // final bool regComplete = ls.getProfileCompletionStatus();
     // final bool adminApproval = ls.getAdminAprovalStatus();
@@ -79,14 +86,7 @@ class ProductWidget extends StatelessWidget {
         child: Container(
           // margin: EdgeInsets.only(left: 10),
           padding: EdgeInsets.fromLTRB(10, 10, 10, 10),
-          // decoration: BoxDecoration(
-          //   color: ConstantData.bgColor,
-          //   borderRadius: BorderRadius.circular(15),
-          //   border: Border.all(
-          //     color: ConstantData.borderColor,
-          //     // width: ,
-          //   ),
-          // ),
+
           child: Row(
             children: [
               Container(
@@ -174,7 +174,7 @@ class ProductWidget extends StatelessWidget {
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
-                                    //Add to cart plus minus button
+
                                     SizedBox(
                                       width: 15,
                                       height: 25,
@@ -185,11 +185,14 @@ class ProductWidget extends StatelessWidget {
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   children: [
+                                    SizedBox(
+                                      height: 20,
+                                    ),
                                     Text(
                                       'MRP : ',
                                       style: TextStyle(
                                         color: Colors.black45,
-                                        fontSize: 16,
+                                        fontSize: 13,
                                         fontStyle: FontStyle.normal,
                                       ),
                                     ),
@@ -197,7 +200,7 @@ class ProductWidget extends StatelessWidget {
                                       product.oldmrp,
                                       style: TextStyle(
                                         color: Colors.black45,
-                                        fontSize: 16,
+                                        fontSize: 13,
                                         fontWeight: FontWeight.bold,
                                         decoration: TextDecoration.lineThrough,
                                       ),
@@ -216,84 +219,139 @@ class ProductWidget extends StatelessWidget {
                                   ],
                                 ),
                                 SizedBox(
-                                  height: 10,
+                                  height: 5,
                                 ),
                                 // Add button
-                                Visibility(
-                                  visible: !_displayAddBtnOnSide,
-                                  child: Row(
-                                    children: [
-                                      Visibility(
-                                        visible: !product.inCart.value,
-                                        child: SizedBox(
-                                          height: 20,
-                                          width: 70,
-                                          child: ElevatedButton(
-                                            onPressed: addToCart,
-                                            child: const Text(
-                                              'Add',
-                                              style: TextStyle(
-                                                fontSize: 10,
-                                              ),
+                                Row(
+                                  children: [
+                                    Visibility(
+                                      visible: !product.inCart.value,
+                                      child: SizedBox(
+                                        height: 20,
+                                        width: 70,
+                                        child: ElevatedButton(
+                                          onPressed: addToCart,
+                                          child: const Text(
+                                            'Add',
+                                            style: TextStyle(
+                                              fontSize: 10,
                                             ),
                                           ),
                                         ),
                                       ),
-                                      // plus minus btn
-                                      Visibility(
-                                        visible: product.inCart.value,
-                                        child: Row(
-                                          children: [
-                                            getCartButton(
-                                                icon: CupertinoIcons.minus,
-                                                function: deleteItem),
-                                            SizedBox(
-                                              width: 10,
-                                            ),
-                                            GestureDetector(
-                                              onTap: () {
-                                                print("Open as text box");
-                                                ScaffoldMessenger.of(context)
-                                                    .showSnackBar(
-                                                  SnackBar(
-                                                    content: Row(
-                                                      children: [
-                                                        const Text(
-                                                            'Enter Quanlity'),
-                                                      ],
-                                                    ),
-                                                    action: SnackBarAction(
-                                                      label: 'Action',
-                                                      onPressed: () {
-                                                        // Code to execute.
-                                                      },
-                                                    ),
+                                    ),
+                                    // plus minus btn
+                                    Visibility(
+                                      visible: product.inCart.value,
+                                      child: Row(
+                                        children: [
+                                          getCartButton(
+                                              icon: CupertinoIcons.minus,
+                                              function: minusItem),
+                                          SizedBox(
+                                            width: 5,
+                                          ),
+                                          //Show quantity in inputbox , editable
+                                          Visibility(
+                                            visible: showInputBox,
+                                            child: SizedBox(
+                                              width: 60,
+                                              height: 20,
+                                              child: TextField(
+                                                keyboardType:
+                                                    TextInputType.number,
+                                                textAlign: TextAlign.center,
+                                                onTap: () {
+                                                  beforeChange();
+                                                },
+                                                onChanged: (v) {
+                                                  updateCartQty(v);
+                                                },
+                                                onEditingComplete:
+                                                    editingComplete,
+                                                // keyboardType:
+                                                //     TextInputType.number,
+                                                cursorColor: Colors.grey,
+
+                                                controller: qtyController,
+                                                maxLines: 1,
+                                                style: TextStyle(
+                                                    height: 2,
+                                                    fontFamily:
+                                                        ConstantData.fontFamily,
+                                                    color: Colors.black,
+                                                    fontWeight: FontWeight.w400,
+                                                    fontSize: 12),
+                                                decoration: InputDecoration(
+                                                  enabledBorder:
+                                                      OutlineInputBorder(
+                                                    // width: 0.0 produces a thin "hairline" border
+                                                    borderSide: BorderSide(
+                                                        color: Colors.grey,
+                                                        width: 0.0),
                                                   ),
-                                                );
-                                              },
-                                              child: getCustomText(
-                                                product.cartquantity.value,
-                                                ConstantData.mainTextColor,
-                                                2,
-                                                TextAlign.start,
-                                                FontWeight.w500,
-                                                ConstantWidget
-                                                    .getScreenPercentSize(
-                                                        context, 1.8),
+                                                  // hintText: 'Full Name',
+                                                ),
                                               ),
                                             ),
-                                            SizedBox(
-                                              width: 10,
+                                          ),
+                                          Visibility(
+                                            //Show quantity in text , non editable
+                                            visible: !showInputBox,
+                                            child: GestureDetector(
+                                              onTap: () {
+                                                showTextBox(context);
+                                              },
+                                              child: Container(
+                                                color: Colors.grey.shade50,
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceAround,
+                                                  children: [
+                                                    SizedBox(
+                                                      width: 15,
+                                                    ),
+                                                    getCustomText(
+                                                      product
+                                                          .cartquantity.value,
+                                                      ConstantData
+                                                          .mainTextColor,
+                                                      2,
+                                                      TextAlign.center,
+                                                      FontWeight.w500,
+                                                      ConstantWidget
+                                                          .getScreenPercentSize(
+                                                              context, 2.2),
+                                                    ),
+                                                    SizedBox(
+                                                      width: 15,
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
                                             ),
-                                            getCartButton(
-                                              icon: CupertinoIcons.plus,
-                                              function: plusItem,
-                                            ),
-                                          ],
-                                        ),
+                                          ),
+                                          SizedBox(
+                                            width: 5,
+                                          ),
+                                          getCartButton(
+                                            icon: CupertinoIcons.plus,
+                                            function: plusItem,
+                                          ),
+                                          SizedBox(
+                                            width: 20,
+                                          ),
+                                          getCartButton(
+                                            icon: CupertinoIcons.delete_solid,
+                                            color: Colors.white,
+                                            function: clearItem,
+                                            delBtn: true,
+                                          ),
+                                        ],
                                       ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
                               ],
                             ),
@@ -353,7 +411,29 @@ class ProductWidget extends StatelessWidget {
     }
   }
 
-  deleteItem() async {
+  clearItem() async {
+    print('Clear Item');
+    String x = product.cartquantity.value;
+    int qty = int.tryParse(x) == null ? 0 : int.parse(x);
+    bool updateQty = false;
+
+    //call deteleCart
+    var delStatus =
+        await ApiService.deleteItem(product: product, session: session);
+    if (delStatus == 1) {
+      updateQty = true;
+    }
+
+    if (updateQty) {
+      qty = 0;
+      if (qty == 0) {
+        product.inCart(false);
+      }
+      product.cartquantity.value = qty.toString();
+    }
+  }
+
+  minusItem() async {
     print('One product deleted');
     String x = product.cartquantity.value;
     int qty = int.tryParse(x) == null ? 0 : int.parse(x);
@@ -380,5 +460,172 @@ class ProductWidget extends StatelessWidget {
       }
       product.cartquantity.value = qty.toString();
     }
+  }
+
+  updateCartQty(v) {
+    print('In Onchanged event');
+
+    // print('Text Controller value ${qtyController.text}');
+    // print('Updatimng cart qty ${v}');
+    if (v == null) {
+      print('Null not allowed');
+    }
+    if (int.tryParse(v) == null) {
+      print('Invalid value of number');
+      // qtyController.text = _beforeChange;
+    }
+  }
+
+  beforeChange() {
+    print('In onTap');
+    //print('Before change ${qtyController.text}');
+    // _beforeChange = qtyController.text;
+  }
+
+  editingComplete() {
+    print('Editing complted');
+  }
+
+  checkAndUpdateCartQty(context) async {
+    print('Calling update qty after check');
+    String newQty = qtyController.text;
+    String oldQty = product.cartquantity.value;
+    String maxQty = product.quantity;
+
+    if (int.tryParse(newQty) == null) {
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+      const errorSnackBar = SnackBar(
+        backgroundColor: Colors.red,
+        content: Text('Incorrect Quantity. Can\'t  update!!',
+            style: TextStyle(
+              color: Colors.white,
+            )),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(errorSnackBar);
+    } else {
+      int oldQtyVal = int.tryParse(oldQty) == null ? 0 : int.parse(oldQty);
+      int maxQtyVal = int.tryParse(maxQty) == null ? 0 : int.parse(maxQty);
+      int newQtyVal = int.parse(newQty);
+      if (newQtyVal > maxQtyVal) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        const errorSnackBar = SnackBar(
+          backgroundColor: Colors.redAccent,
+          content: Text(
+              'Your order quantity more than available quantity. Can\'t  update!!',
+              style: TextStyle(
+                color: Colors.white,
+              )),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(errorSnackBar);
+      } else if (newQtyVal <= 0) {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        const errorSnackBar = SnackBar(
+          backgroundColor: Colors.redAccent,
+          content: Text('Your order quantity can\'t be less than one!!',
+              style: TextStyle(
+                color: Colors.white,
+              )),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(errorSnackBar);
+      } else {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        var newProducts = await ApiService.updateQuantityforItem(
+            product: product, session: session, newQuantity: newQty);
+        if (newProducts == 1) {
+          print('New product added successful');
+          product.cartquantity.value = newQty;
+          product.inCart(true);
+          const errorSnackBar = SnackBar(
+            backgroundColor: Colors.green,
+            content: Text('Quantity Successfully Updated!!',
+                style: TextStyle(
+                  color: Colors.white,
+                )),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(errorSnackBar);
+        } else {
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          const errorSnackBar = SnackBar(
+            backgroundColor: Colors.redAccent,
+            content:
+                Text('Your order quantity can\'t was not updated. Try later!!',
+                    style: TextStyle(
+                      color: Colors.white,
+                    )),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(errorSnackBar);
+          print('Product status not 1');
+        }
+      }
+    }
+  }
+
+  showTextBox(context) {
+    print('This is to show text box');
+    qtyController.text = product.cartquantity.value;
+    final snackBar = SnackBar(
+      duration: Duration(seconds: 30),
+      content: Row(
+        children: [
+          Text('New Quantity : '),
+          SizedBox(
+            width: 60,
+            height: 20,
+            child: TextField(
+              keyboardType: TextInputType.number,
+              textAlign: TextAlign.center,
+              onTap: () {
+                beforeChange();
+              },
+              onChanged: (v) {
+                updateCartQty(v);
+              },
+              onEditingComplete: editingComplete,
+              // keyboardType:
+              //     TextInputType.number,
+              cursorColor: Colors.white,
+
+              controller: qtyController,
+              maxLines: 1,
+              style: TextStyle(
+                  height: 1.5,
+                  fontFamily: ConstantData.fontFamily,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w400,
+                  fontSize: 12),
+              decoration: InputDecoration(
+                enabledBorder: OutlineInputBorder(
+                  // width: 0.0 produces a thin "hairline" border
+                  borderSide: BorderSide(color: Colors.grey, width: 0.0),
+                ),
+                // hintText: 'Full Name',
+              ),
+            ),
+          ),
+          GestureDetector(
+            onTap: () {
+              checkAndUpdateCartQty(context);
+            },
+            child: SizedBox(
+              height: 25,
+              child: CircleAvatar(
+                backgroundColor: Colors.green,
+                child: Icon(
+                  Icons.check,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+      action: SnackBarAction(
+        label: 'Cancel',
+        onPressed: () {
+          // Some code to undo the change.
+        },
+      ),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 }

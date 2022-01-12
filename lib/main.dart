@@ -16,21 +16,30 @@ import 'TabWidget.dart';
 import 'generated/l10n.dart';
 import 'model/SubCategoryModel.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitDown,
     DeviceOrientation.portraitUp,
   ]);
+  await initData();
+  print('Creating the main app after initialization');
   runApp(MyApp());
+}
+
+Future<void> initData() async {
+  print('Starting getx service for localdata');
+  Get.put<LocalSessionController>(LocalSessionController());
+  // print('Starting getx service for country');
+  // await Get.putAsync<CountryController>(() async => CountryController());
 }
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       localizationsDelegates: [
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,
@@ -63,13 +72,14 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   get subCategoryModelList => null;
-  LocalSessionController sessionController =
-      Get.put(LocalSessionController(), permanent: true);
+  // LocalSessionController sessionController =
+  //     Get.put(LocalSessionController(), permanent: true);
 
   @override
   void initState() {
     super.initState();
     // signInValue();
+
     getLocalData();
     setState(() {});
   }
@@ -80,8 +90,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void getLocalData() async {
     //print('Printing session data ${sessionController.mySession.session}');
-    int del = Get.find<LocalSessionController>().test;
-    print('The value of test from local session : ${del}');
+    // int del = Get.find<LocalSessionController>().test;
+    // print('The value of test from local session : ${del}');
     // print(
     //     'The value of mobile number n session ${Get.find<LocalSessionController>().mySession.mobileNo} , ${Get.find<LocalSessionController>().mySession.session}');
     _session_id = await PrefData.getSessionID();

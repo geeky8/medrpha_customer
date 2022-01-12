@@ -23,8 +23,8 @@ class Category {
   String imagedata;
 
   factory Category.fromJson(Map<String, dynamic> json) {
-    print(json["catid"]);
-    print(json["category_name"]);
+    // print(json["catid"]);
+    // print(json["category_name"]);
     return Category(
       catid: json["catid"],
       categoryName: json["category_name"],
