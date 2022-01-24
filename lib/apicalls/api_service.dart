@@ -4,6 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_medical_ui/model/category.dart';
 import 'package:flutter_medical_ui/model/city.dart';
 import 'package:flutter_medical_ui/model/country.dart';
+import 'package:flutter_medical_ui/model/customer.dart';
+import 'package:flutter_medical_ui/model/order_history.dart';
 import 'package:flutter_medical_ui/model/pin.dart';
 import 'package:flutter_medical_ui/model/product.dart';
 import 'package:flutter_medical_ui/model/state.dart';
@@ -278,6 +280,59 @@ class ApiService {
     }
   }
 
+  static Future<String> uploadImage(filepath, session_id,
+      {imageType = 3}) async {
+    //imageType
+    // 1: dl 1
+    // 2: dl 2
+    // 3 : fssai
+    String url;
+    if (imageType == 3) {
+      url = 'https://medrpha.com/api/register/registerfssaiimg';
+    } else if (imageType == 1) {
+      url = 'https://medrpha.com/api/register/registerdl1';
+    } else {
+      url = 'https://medrpha.com/api/register/registerdl2';
+    }
+    var request = http.MultipartRequest('POST', Uri.parse(url));
+    Map jsonBody = {
+      "sessid": session_id,
+    };
+    request.fields["sessid"] = session_id;
+    request.files.add(await http.MultipartFile.fromPath('image', filepath));
+    var res = await request.send();
+    return res.reasonPhrase;
+  }
+
+  static Future<dynamic> getUserStatus({String sessionID}) async {
+    var url = Uri.parse('https://api.medrpha.com/api/Default/userstatus');
+    Map jsonBody = {
+      "sessid": sessionID,
+    };
+    var response = await client.post(url, body: jsonBody);
+
+    if (response.statusCode == 200) {
+      var jsonObj = response.body;
+      var jsonData = json.decode(jsonObj.toString());
+      print(jsonData);
+      if (jsonData['status'] == "0" || jsonData['status'] == null) {
+        return {'status': '0'};
+      } else {
+        var dataArray = jsonData['data'];
+        bool _regComplete =
+            dataArray["complete_reg_status"] == "True" ? true : false;
+        bool adminstatus = dataArray["adminstatus"] == "True" ? true : false;
+        return {
+          'status': '1',
+          'completed': _regComplete,
+          'admin': adminstatus,
+        };
+      }
+    } else {
+      return {'status': '0'};
+    }
+  }
+
   static Future<List<Pin>> getAllPin({String sessionID}) async {
     List<Pin> tempPin = [];
     var url = Uri.parse('https://api.medrpha.com/api/register/getpincodeall');
@@ -300,6 +355,41 @@ class ApiService {
       }
     } else {
       return tempPin;
+    }
+  }
+
+  static Future<dynamic> getCartItems({String sessionID}) async {
+    var url = Uri.parse('https://api.medrpha.com/api/cart/viewcart');
+    Map jsonBody = {
+      "sessid": sessionID,
+    };
+    var response = await client.post(url, body: jsonBody);
+
+    if (response.statusCode == 200) {
+      var jsonObj = response.body;
+      var jsonData = json.decode(jsonObj.toString());
+      // print(jsonData);
+      if (jsonData['status'] == "0" || jsonData['status'] == null) {
+        return {"status": '0'};
+      } else {
+        String cartCount = jsonData['count'];
+        String finalPrice = jsonData['final'];
+        String finalPriceString = jsonData['total'];
+        var cartArray = jsonData['data'];
+        Map resData = {
+          "status": "1",
+          "cartCount": cartCount,
+          "finalPrice": finalPrice,
+          "finalPriceString": finalPriceString,
+          "cartItems": cartArray
+        };
+        return resData;
+      }
+    } else {
+      return {
+        "status": '0',
+        "code": response.statusCode,
+      };
     }
   }
 
@@ -330,6 +420,211 @@ class ApiService {
       }
     } else {
       return MyProductList;
+    }
+  }
+
+  static Future<String> updateCustomer(
+      {String sessionID, Customer customer}) async {
+    var url = Uri.parse('https://api.medrpha.com/api/register/register');
+    Map jsonBody = {
+      "sessid": sessionID,
+      "firm_name": customer.firmName,
+      "txtemail": customer.txtemail,
+      "countryid": customer.countryid,
+      "stateid": customer.stateid,
+      "phoneno": customer.phoneno,
+      "cityid": customer.cityid,
+      "Areaid": customer.areaid,
+      "address": customer.address,
+      "PersonName": customer.personName,
+      "PersonNumber": customer.personNumber,
+      "AlternateNumber": customer.alternateNumber
+    };
+    // print(jsonBody);
+    var response = await client.post(url, body: jsonBody);
+    // print(response);
+    if (response.statusCode == 200) {
+      var jsonObj = response.body;
+      var jsonData = json.decode(jsonObj.toString());
+      // print(jsonData);
+      if (jsonData['status'] == "0" || jsonData['status'] == null) {
+        return "0";
+      } else {
+        String status = jsonData['status'];
+        return status;
+      }
+    } else {
+      return "0";
+    }
+  }
+
+  static Future<String> updateDL(
+      {String sessionID, String dlno, String dlname, String validTill}) async {
+    var url = Uri.parse('https://api.medrpha.com/api/register/registerdlno');
+    Map jsonBody = {
+      "sessid": sessionID,
+      "txtdlno": dlno,
+      "valid": validTill,
+      "txtdlname": dlname,
+    };
+    print(jsonBody);
+    var response = await client.post(url, body: jsonBody);
+
+    if (response.statusCode == 200) {
+      var jsonObj = response.body;
+      var jsonData = json.decode(jsonObj.toString());
+      print(jsonData);
+      if (jsonData['status'] == "0" || jsonData['status'] == null) {
+        return "0";
+      } else {
+        String status = jsonData['status'];
+        return status;
+      }
+    } else {
+      print(response);
+      return "0";
+    }
+  }
+
+  static Future<String> updateFSSAI({String sessionID, String fssaino}) async {
+    var url = Uri.parse('https://api.medrpha.com/api/register/registerfssai');
+    Map jsonBody = {"sessid": sessionID, "fssaiNo": fssaino};
+    print(jsonBody);
+    var response = await client.post(url, body: jsonBody);
+
+    if (response.statusCode == 200) {
+      var jsonObj = response.body;
+      var jsonData = json.decode(jsonObj.toString());
+      print(jsonData);
+      if (jsonData['status'] == "0" || jsonData['status'] == null) {
+        return "0";
+      } else {
+        String status = jsonData['status'];
+        return status;
+      }
+    } else {
+      print(response);
+      return "0";
+    }
+  }
+
+  static Future<String> updateGST({String sessionID, String gstno}) async {
+    var url = Uri.parse('https://api.medrpha.com/api/register/registergstno');
+    Map jsonBody = {"sessid": sessionID, "gstno": gstno};
+    print(jsonBody);
+    var response = await client.post(url, body: jsonBody);
+
+    if (response.statusCode == 200) {
+      var jsonObj = response.body;
+      var jsonData = json.decode(jsonObj.toString());
+      print(jsonData);
+      if (jsonData['status'] == "0" || jsonData['status'] == null) {
+        return "0";
+      } else {
+        String status = jsonData['status'];
+        return status;
+      }
+    } else {
+      return "0";
+    }
+  }
+
+  static Future<String> deleteGST({String sessionID}) async {
+    var url =
+        Uri.parse('https://api.medrpha.com/api/register/registergstnodelete');
+    Map jsonBody = {
+      "sessid": sessionID,
+    };
+    print(jsonBody);
+    var response = await client.post(url, body: jsonBody);
+
+    if (response.statusCode == 200) {
+      var jsonObj = response.body;
+      var jsonData = json.decode(jsonObj.toString());
+      print(jsonData);
+      if (jsonData['status'] == "0" || jsonData['status'] == null) {
+        return "0";
+      } else {
+        String status = jsonData['status'];
+        return status;
+      }
+    } else {
+      return "0";
+    }
+  }
+
+  static Future<String> deleteFSSAI({String sessionID}) async {
+    var url =
+        Uri.parse('https://api.medrpha.com/api/register/registerfssaidelete');
+    Map jsonBody = {
+      "sessid": sessionID,
+    };
+    print(jsonBody);
+    var response = await client.post(url, body: jsonBody);
+
+    if (response.statusCode == 200) {
+      var jsonObj = response.body;
+      var jsonData = json.decode(jsonObj.toString());
+      print(jsonData);
+      if (jsonData['status'] == "0" || jsonData['status'] == null) {
+        return "0";
+      } else {
+        String status = jsonData['status'];
+        return status;
+      }
+    } else {
+      return "0";
+    }
+  }
+
+  static Future<Customer> getCustomerData({String sessionID}) async {
+    Customer tempCustomer;
+    var url = Uri.parse('https://api.medrpha.com/api/profile/getprofile');
+    Map jsonBody = {
+      "sessid": sessionID,
+    };
+    var response = await client.post(url, body: jsonBody);
+
+    if (response.statusCode == 200) {
+      var jsonObj = response.body;
+      var jsonData = json.decode(jsonObj.toString());
+      // print(jsonData);
+      if (jsonData['status'] == "0" || jsonData['status'] == null) {
+        return tempCustomer;
+      } else {
+        var dataArray = jsonData['data'];
+        return dataArray == null
+            ? tempCustomer
+            : customerFromJson(json.encode(dataArray));
+      }
+    } else {
+      return tempCustomer;
+    }
+  }
+
+  static Future<List<OrderHistory>> getOrderHistoryData(
+      {String sessionID}) async {
+    List<OrderHistory> tempOrderHistory = [];
+    var url = Uri.parse('https://api.medrpha.com/api/order/orderlist');
+    Map jsonBody = {
+      "sessid": sessionID,
+    };
+    var response = await client.post(url, body: jsonBody);
+
+    if (response.statusCode == 200) {
+      var jsonObj = response.body;
+      var jsonData = json.decode(jsonObj.toString());
+      // print(jsonData);
+      if (jsonData['status'] == "0" || jsonData['status'] == null) {
+        return tempOrderHistory;
+      } else {
+        var dataArray = jsonData['data'];
+        return dataArray == null
+            ? tempOrderHistory
+            : orderHistoryFromJson(json.encode(dataArray));
+      }
+    } else {
+      return tempOrderHistory;
     }
   }
 }

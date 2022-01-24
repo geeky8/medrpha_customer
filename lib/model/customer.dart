@@ -31,6 +31,7 @@ class Customer {
     this.alternateNumber,
     this.hdnDrugsyesno,
     this.hdnFssai,
+    this.gstnoyesno,
   });
 
   String firmName;
@@ -54,6 +55,7 @@ class Customer {
   String alternateNumber;
   String hdnDrugsyesno;
   String hdnFssai;
+  String gstnoyesno;
 
   factory Customer.fromJson(Map<String, dynamic> json) => Customer(
         firmName: json["firm_name"],
@@ -77,6 +79,7 @@ class Customer {
         alternateNumber: json["AlternateNumber"],
         hdnDrugsyesno: json["hdnDrugsyesno"],
         hdnFssai: json["hdnFSSAI"],
+        gstnoyesno: json["gstnoyesno"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -101,5 +104,6 @@ class Customer {
         "AlternateNumber": alternateNumber,
         "hdnDrugsyesno": hdnDrugsyesno,
         "hdnFSSAI": hdnFssai,
+        "gstnoyesno": gstnoyesno,
       };
 }

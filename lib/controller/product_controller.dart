@@ -1,5 +1,6 @@
 import 'package:flutter_medical_ui/apicalls/api_service.dart';
 import 'package:flutter_medical_ui/model/product.dart';
+import 'package:flutter_medical_ui/util/PrefData.dart';
 import 'package:get/get.dart';
 
 import 'local_session_controller.dart';
@@ -11,6 +12,10 @@ class ProductController extends GetxController {
   var cartCount = RxInt(0);
   var loaded = false.obs;
   var showProduct = false.obs;
+
+  var adminApproved = false.obs;
+  var regCompleted = false.obs;
+
   @override
   void onInit() {
     super.onInit();
@@ -30,6 +35,36 @@ class ProductController extends GetxController {
   updateCartCount() {
     cartCount++;
     print(cartCount);
+  }
+
+  getApprovedStatus() async {
+    LocalSessionController ls = Get.find<LocalSessionController>();
+    String _sessionID = ls.getSessionValue();
+    print('getting user status');
+    try {
+      var response = await ApiService.getUserStatus(sessionID: _sessionID);
+      if (response["status"] == "1") {
+        ls.mySession.adminApproved = response["admin"];
+        ls.mySession.regCompleted = response["completed"];
+      }
+      print(
+          'status function try statement. the value of admin approved : ${ls.mySession.adminApproved} and thevalue of reg completed ${ls.mySession.regCompleted}');
+    } finally {
+      adminApproved = RxBool(ls.getAdminAprovalStatus());
+      regCompleted = RxBool(ls.getProfileCompletionStatus());
+      showProduct =
+          ls.getProfileCompletionStatus() && ls.getAdminAprovalStatus()
+              ? RxBool(true)
+              : RxBool(false);
+      print('status function completed');
+    }
+  }
+
+  hideProductPrice(bool hide) {
+    showProduct(!hide);
+    adminApproved(!hide);
+    Get.find<LocalSessionController>().mySession.adminApproved = !hide;
+    PrefData.setAdminApproved(!hide);
   }
 
   testToggleVisibility() {
@@ -56,10 +91,15 @@ class ProductController extends GetxController {
           products.assignAll(newProducts);
         }
       } finally {
+        print(
+            'Trying to set product  admin approved to ${ls.getAdminAprovalStatus()}');
+        adminApproved = RxBool(ls.getAdminAprovalStatus());
+        regCompleted = RxBool(ls.getProfileCompletionStatus());
         showProduct =
             ls.getProfileCompletionStatus() && ls.getAdminAprovalStatus()
                 ? RxBool(true)
                 : RxBool(false);
+
         loaded.value = true;
       }
     }

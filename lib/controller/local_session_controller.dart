@@ -1,13 +1,16 @@
+import 'package:flutter_medical_ui/controller/cart_controller.dart';
 import 'package:flutter_medical_ui/controller/pin_controller.dart';
 import 'package:flutter_medical_ui/controller/state_controller.dart';
+import 'package:flutter_medical_ui/model/local_session.dart';
 import 'package:flutter_medical_ui/util/PrefData.dart';
 import 'package:get/get.dart';
 
 import 'city_controller.dart';
 import 'country_controller.dart';
+import 'customer_controller.dart';
 
 class LocalSessionController extends GetxService {
-  var mySession;
+  LocalSession mySession;
   int test = 11;
   static String medDefault = 'medrpha_';
   static String sessionID = medDefault + "sessionId";
@@ -16,33 +19,32 @@ class LocalSessionController extends GetxService {
   static String adminApproved = medDefault + "adminApproved";
   static String pin = medDefault + "pin";
 
+  LocalSessionController() {
+    print('In constructor of local session data');
+  }
+
   @override
   Future onInit() async {
     super.onInit();
     print('getting session now');
     await getSessionData();
     print(
-        'Init called from Local session controller, and init has been called adter getting the pref data');
+        'Init called from Local session controller, and init has been called after getting the pref data');
   }
 
   Future<void> getSessionData() async {
     print('Getting pref data from disk');
 
-    // SharedPreferences prefs = await SharedPreferences.getInstance();
-    // String session = prefs.getString(sessionID);
-    // String mobile = prefs.getString(mobileNo) ?? '';
-    // String newpin = prefs.getString(pin) ?? '';
-    // bool regC = prefs.getBool(regCompleted) ?? false;
-    // bool adminapp = prefs.getBool(adminApproved) ?? false;
-    //
-    // print('Local data received');
-    // mySession = LocalSession(session, mobile, regC, adminapp, newpin);
     mySession = await PrefData.getAllLocalData();
-    print('Starting getx service for country');
+
+    print(
+        'Starting getx service for country for session id : ${mySession.session}');
     Get.put<CountryController>(CountryController(), permanent: true);
     Get.put<StateController>(StateController(), permanent: true);
     Get.put<CityController>(CityController(), permanent: true);
     Get.put<PinController>(PinController(), permanent: true);
+    Get.put<CustomerController>(CustomerController(), permanent: true);
+    Get.put<CartController>(CartController(), permanent: true);
   }
 
   String getSessionValue() {
@@ -55,5 +57,9 @@ class LocalSessionController extends GetxService {
 
   bool getAdminAprovalStatus() {
     return mySession.adminApproved;
+  }
+
+  String getPhoneNumber() {
+    return mySession.mobileNo;
   }
 }

@@ -3,9 +3,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_medical_ui/generated/l10n.dart';
 
-
 import '../MyOrderPage.dart';
-import '../OrderTrackMap.dart';
 import 'ConstantData.dart';
 import 'ConstantWidget.dart';
 
@@ -69,107 +67,108 @@ class _ThankYouDialog extends State<ThankYouDialog> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
-        Expanded(child: Container(child: Column(
-
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-
-            Image.asset(
-              ConstantData.assetsPath + "accept-circular-button-outline.png",
-              color: ConstantData.primaryColor,
-              height: ConstantWidget.getPercentSize(height, 18),
-              width: ConstantWidget.getPercentSize(height, 18),
-            ),
-            SizedBox(
-              height: ConstantWidget.getPercentSize(
-                height,
-                5,
-              ),
-            ),
-            ConstantWidget.getTextWidget(
-                S.of(context).thankYou,
-                ConstantData.mainTextColor,
-                TextAlign.center,
-                FontWeight.bold,
-                ConstantWidget.getPercentSize(height, 7)) ,
-
-
-            SizedBox(
-              height: ConstantWidget.getPercentSize(
-                height,
-                6,
-              ),
-            ),
-            Padding(
-              padding: EdgeInsets.only(top: 10, bottom: 5),
-              child: RichText(
-                textAlign: TextAlign.center,
-                text: new TextSpan(
-                  style: new TextStyle(
-                    // fontWeight: FontWeight.w600,
-                    fontSize: ConstantData.font18Px,
-                    fontFamily: ConstantData.fontFamily,
-                    color: ConstantData.mainTextColor,
+          Expanded(
+              child: Container(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Image.asset(
+                  ConstantData.assetsPath +
+                      "accept-circular-button-outline.png",
+                  color: ConstantData.primaryColor,
+                  height: ConstantWidget.getPercentSize(height, 18),
+                  width: ConstantWidget.getPercentSize(height, 18),
+                ),
+                SizedBox(
+                  height: ConstantWidget.getPercentSize(
+                    height,
+                    5,
                   ),
-                  children: <TextSpan>[
-                    new TextSpan(text: 'Your order'),
-                    new TextSpan(
-                        text: ' #345678 ',
-                        style: new TextStyle(
-                            fontSize: ConstantData.font18Px,
-                            fontWeight: FontWeight.bold,
-                            color: ConstantData.textColor)),
-                    new TextSpan(text: 'is Completed.'),
-                  ],
                 ),
-              ),
-            ),
-            RichText(
-              textAlign: TextAlign.center,
-              text: new TextSpan(
-                style: new TextStyle(
-                  fontSize: ConstantData.font12Px,
-                  fontFamily: ConstantData.fontFamily,
-                  color: ConstantData.mainTextColor,
+                ConstantWidget.getTextWidget(
+                    S.of(context).thankYou,
+                    ConstantData.mainTextColor,
+                    TextAlign.center,
+                    FontWeight.bold,
+                    ConstantWidget.getPercentSize(height, 7)),
+                SizedBox(
+                  height: ConstantWidget.getPercentSize(
+                    height,
+                    6,
+                  ),
                 ),
-                children: <TextSpan>[
-                  new TextSpan(
-                      text: 'Please check the Delivery status at',
+                Padding(
+                  padding: EdgeInsets.only(top: 10, bottom: 5),
+                  child: RichText(
+                    textAlign: TextAlign.center,
+                    text: new TextSpan(
                       style: new TextStyle(
-                          decoration: TextDecoration.none,
-                          fontWeight: FontWeight.w500,
-                          fontSize: ConstantData.font18Px,
-                          color: ConstantData.textColor)),
-                  new TextSpan(
-                      recognizer: new TapGestureRecognizer()
-                        ..onTap = () {
-                          Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => OrderTrackMap(),
-                              ));
-                        },
-                      text: '\nOrder Tracking ',
-                      style: new TextStyle(
-                          decoration: TextDecoration.underline,
-                          fontWeight: FontWeight.bold,
-                          fontSize: ConstantData.font22Px,
-                          color: ConstantData.accentColor)),
-                  new TextSpan(
-                      text: ' pages.',
-                      style: new TextStyle(
-                          decoration: TextDecoration.none,
-                          fontWeight: FontWeight.w500,
-                          fontSize: ConstantData.font18Px,
-                          color: ConstantData.textColor)),
-                ],
-              ),
+                        // fontWeight: FontWeight.w600,
+                        fontSize: ConstantData.font18Px,
+                        fontFamily: ConstantData.fontFamily,
+                        color: ConstantData.mainTextColor,
+                      ),
+                      children: <TextSpan>[
+                        new TextSpan(text: 'Your order'),
+                        new TextSpan(
+                            text: ' #345678 ',
+                            style: new TextStyle(
+                                fontSize: ConstantData.font18Px,
+                                fontWeight: FontWeight.bold,
+                                color: ConstantData.textColor)),
+                        new TextSpan(text: 'is Completed.'),
+                      ],
+                    ),
+                  ),
+                ),
+                RichText(
+                  textAlign: TextAlign.center,
+                  text: new TextSpan(
+                    style: new TextStyle(
+                      fontSize: ConstantData.font12Px,
+                      fontFamily: ConstantData.fontFamily,
+                      color: ConstantData.mainTextColor,
+                    ),
+                    children: <TextSpan>[
+                      new TextSpan(
+                          text: 'Please check the Delivery status at',
+                          style: new TextStyle(
+                              decoration: TextDecoration.none,
+                              fontWeight: FontWeight.w500,
+                              fontSize: ConstantData.font18Px,
+                              color: ConstantData.textColor)),
+                      new TextSpan(
+                          recognizer: new TapGestureRecognizer()
+                            ..onTap = () {
+                              // Navigator.pushReplacement(
+                              //     context,
+                              //     MaterialPageRoute(
+                              //       builder: (context) => OrderTrackMap(),
+                              //     ));
+                            },
+                          text: '\nOrder Tracking ',
+                          style: new TextStyle(
+                              decoration: TextDecoration.underline,
+                              fontWeight: FontWeight.bold,
+                              fontSize: ConstantData.font22Px,
+                              color: ConstantData.accentColor)),
+                      new TextSpan(
+                          text: ' pages.',
+                          style: new TextStyle(
+                              decoration: TextDecoration.none,
+                              fontWeight: FontWeight.w500,
+                              fontSize: ConstantData.font18Px,
+                              color: ConstantData.textColor)),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: ConstantWidget.getScreenPercentSize(context, 3),
+                ),
+              ],
             ),
-            SizedBox(height: ConstantWidget.getScreenPercentSize(context,3),),
-
-          ],
-        ),)),
+          )),
           // Expanded(child: Align(alignment: Alignment.bottomCenter,child: ConstantWidget.getBottomText(context, S.of(context).goToOrder, (){
           //   Navigator.pushReplacement(
           //       context,
@@ -178,14 +177,13 @@ class _ThankYouDialog extends State<ThankYouDialog> {
           //       ));
           // }),))
 
-          ConstantWidget.getBottomText(context, S.of(context).goToOrder, (){
+          ConstantWidget.getBottomText(context, S.of(context).goToOrder, () {
             Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
                   builder: (context) => MyOrderPage(false),
                 ));
           })
-
         ],
       ),
     );

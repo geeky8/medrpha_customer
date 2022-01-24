@@ -1,11 +1,14 @@
+import 'dart:convert';
+
 import 'package:flutter_medical_ui/apicalls/api_service.dart';
 import 'package:flutter_medical_ui/controller/local_session_controller.dart';
 import 'package:flutter_medical_ui/model/cart.dart';
 import 'package:get/get.dart';
 
 class CartController extends GetxController {
-  Cart myCart;
-  var categoryCount = RxInt(0);
+  var myCart = <Cart>[].obs;
+  var cartCount = RxInt(0);
+  var finalPrice = RxDouble(0.0);
   var loaded = false.obs;
   @override
   void onInit() {
@@ -14,19 +17,26 @@ class CartController extends GetxController {
   }
 
   fillCart() async {
-    Cart tempCart;
+    List<Cart> tempCart = [];
     LocalSessionController ls = Get.find<LocalSessionController>();
     String _sessionID = ls.getSessionValue();
     if (_sessionID == 'no' || _sessionID == '') {
       print('session missing');
-      myCart = tempCart;
+      myCart.value = tempCart;
     } else {
       print('session present');
       try {
         loaded(false);
-        var cats = await ApiService.getAllCategory(sessionID: _sessionID);
-        if (cats != null) {
+        var itemsResult = await ApiService.getCartItems(sessionID: _sessionID);
+        if (itemsResult != null) {
           // categoryList.assignAll(cats);
+          // if(itemsResult)
+          if (itemsResult["status"] == "1") {
+            cartCount.value = int.parse(itemsResult["cartCount"]);
+            myCart
+                .assignAll(cartFromJson(json.encode(itemsResult["cartItems"])));
+            finalPrice.value = double.parse(itemsResult["finalPrice"]);
+          }
         }
       } finally {
         // getCatCount();

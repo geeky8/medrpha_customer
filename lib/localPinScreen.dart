@@ -1,22 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_medical_ui/util/ConstantWidget.dart';
+import 'package:flutter_medical_ui/controller/local_session_controller.dart';
 import 'package:flutter_medical_ui/util/ConstantData.dart';
-import 'package:flutter_medical_ui/util/CustomDialogBox.dart';
+import 'package:flutter_medical_ui/util/ConstantWidget.dart';
 import 'package:flutter_medical_ui/util/PrefData.dart';
 import 'package:flutter_medical_ui/util/SizeConfig.dart';
+import 'package:flutter_medical_ui/view/my_getx_home_page.dart';
+import 'package:get/get.dart';
 import 'package:pin_input_text_field/pin_input_text_field.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'package:flutter_medical_ui/util/PrefData.dart';
 
-import 'CategoriesPage.dart';
-import 'MyHome.dart';
-import 'SubCategoriesPage.dart';
-import 'TabWidget.dart';
-import 'WidgetNotificationConfirmation.dart';
-import 'generated/l10n.dart';
 import 'myWidget/my_common_widget.dart';
 
 class LocalPinScreen extends StatefulWidget {
@@ -71,11 +64,18 @@ class _PhoneVerification extends State<LocalPinScreen> {
     await PrefData.setAdminApproved(adminstatus);
     await PrefData.setRegCompleted(complete_reg_status);
     await PrefData.setPin(pin);
+    try {
+      Get.find<LocalSessionController>();
+    } catch (e) {
+      Get.put<LocalSessionController>(LocalSessionController(),
+          permanent: true);
+    }
+
     // Navigator.pushReplacement(
-    Navigator.push(
+    Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (context) => MyHome(),
+          builder: (context) => MyNewHomePage(),
         ));
   }
 

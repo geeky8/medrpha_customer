@@ -1,17 +1,15 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_medical_ui/util/ConstantWidget.dart';
 import 'package:flutter_medical_ui/util/ConstantData.dart';
-import 'package:flutter_medical_ui/util/CustomDialogBox.dart';
+import 'package:flutter_medical_ui/util/ConstantWidget.dart';
 import 'package:flutter_medical_ui/util/PrefData.dart';
 import 'package:flutter_medical_ui/util/SizeConfig.dart';
-import 'package:pin_input_text_field/pin_input_text_field.dart';
 import 'package:http/http.dart' as http;
-import 'package:sms_receiver/sms_receiver.dart';
-import 'dart:convert';
+import 'package:pin_input_text_field/pin_input_text_field.dart';
 
-import 'WidgetNotificationConfirmation.dart';
 import 'generated/l10n.dart';
 import 'localPinScreen.dart';
 import 'myWidget/my_common_widget.dart';
@@ -97,9 +95,6 @@ class _PhoneVerification extends State<MyPhoneVerification> {
     print('Response body: ${response.body}');
     if (response.statusCode.toString() == "200" || response.statusCode == 200) {
       var jsonData = json.decode(response.body.toString());
-      // for (var tempData in jsonData) {
-      //   tempData['status'].toString(),
-      // }
       final String status = jsonData['status'];
       var data = jsonData['data'];
       if (status == "1") {
@@ -111,7 +106,7 @@ class _PhoneVerification extends State<MyPhoneVerification> {
               data['complete_reg_status'] == "True" ? true : false;
           _adminstatus = data['adminstatus'] == "True" ? true : false;
           print('$_session_id $_complete_reg_status $_adminstatus');
-          Navigator.push(
+          Navigator.pushReplacement(
               context,
               MaterialPageRoute(
                 builder: (context) => LocalPinScreen(

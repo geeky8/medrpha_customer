@@ -1,16 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-import 'package:flutter_medical_ui/model/SubCategoryModel.dart';
 import 'package:flutter_medical_ui/model/OrderDescModel.dart';
 import 'package:flutter_medical_ui/model/OrderModel.dart';
+import 'package:flutter_medical_ui/model/SubCategoryModel.dart';
+import 'package:flutter_medical_ui/util/ConstantData.dart';
 import 'package:flutter_medical_ui/util/ConstantWidget.dart';
 import 'package:flutter_medical_ui/util/DataFile.dart';
-import 'package:flutter_medical_ui/util/ConstantData.dart';
 import 'package:flutter_medical_ui/util/SizeConfig.dart';
-import 'OrderDetailPage.dart';
-import 'OrderTrackMap.dart';
 
+import 'OrderDetailPage.dart';
 import 'ProductDetailPage.dart';
 import 'generated/l10n.dart';
 
@@ -82,7 +80,6 @@ class _MyOrderPage extends State<MyOrderPage>
         child: Scaffold(
           backgroundColor: ConstantData.bgColor,
           appBar: AppBar(
-
             centerTitle: true,
             backgroundColor: ConstantData.bgColor,
             title: ConstantWidget.getAppBarText(
@@ -90,10 +87,13 @@ class _MyOrderPage extends State<MyOrderPage>
             ),
             leading: Builder(
               builder: (BuildContext context) {
-                return Visibility(child: IconButton(
-                  icon: ConstantWidget.getAppBarIcon(),
-                  onPressed: _requestPop,
-                ),visible: (!widget.isHomePage),);
+                return Visibility(
+                  child: IconButton(
+                    icon: ConstantWidget.getAppBarIcon(),
+                    onPressed: _requestPop,
+                  ),
+                  visible: (!widget.isHomePage),
+                );
               },
             ),
             bottom: TabBar(
@@ -153,9 +153,6 @@ class _MyOrderPage extends State<MyOrderPage>
             itemBuilder: (context, index) {
               return InkWell(
                 child: Container(
-
-
-
                   decoration: BoxDecoration(
                       color: ConstantData.bgColor,
                       borderRadius: BorderRadius.circular(radius),
@@ -168,7 +165,6 @@ class _MyOrderPage extends State<MyOrderPage>
                           color: Colors.grey.shade200,
                         )
                       ]),
-
                   margin: EdgeInsets.only(
                       left: leftMargin, top: margin, right: leftMargin),
                   child: Column(
@@ -464,11 +460,11 @@ class _MyOrderPage extends State<MyOrderPage>
                                   ),
                                 ),
                                 onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => OrderTrackMap(),
-                                      ));
+                                  // Navigator.push(
+                                  //     context,
+                                  //     MaterialPageRoute(
+                                  //       builder: (context) => OrderTrackMap(),
+                                  //     ));
                                 },
                               ),
                               flex: 1,
@@ -534,9 +530,16 @@ class _MyOrderPage extends State<MyOrderPage>
                                 //   color: ConstantData.getIconColor(
                                 //       allOrderList[index].type),
                                 // ),
-                                
-                                child: Center(child: Image.asset(ConstantData.assetsPath+"pills.png",color:ConstantData.getIconColor(
-                                    allOrderList[index].type) ,height: ConstantWidget.getPercentSize(imageSize, 50),),),
+
+                                child: Center(
+                                  child: Image.asset(
+                                    ConstantData.assetsPath + "pills.png",
+                                    color: ConstantData.getIconColor(
+                                        allOrderList[index].type),
+                                    height: ConstantWidget.getPercentSize(
+                                        imageSize, 50),
+                                  ),
+                                ),
                               ),
                               Expanded(
                                 child: Column(
@@ -656,9 +659,7 @@ class _MyOrderPage extends State<MyOrderPage>
                                                       bottom: padding),
                                                   child: ConstantWidget
                                                       .getCustomText(
-
-                                                              orderList[index]
-                                                                  .name,
+                                                          orderList[index].name,
                                                           ConstantData
                                                               .mainTextColor,
                                                           1,

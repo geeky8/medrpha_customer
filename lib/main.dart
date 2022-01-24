@@ -3,18 +3,16 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_medical_ui/MyPinVerification.dart';
 import 'package:flutter_medical_ui/controller/local_session_controller.dart';
 import 'package:flutter_medical_ui/util/ConstantData.dart';
-import 'package:flutter_medical_ui/util/DataFile.dart';
 import 'package:flutter_medical_ui/util/PrefData.dart';
-import 'package:flutter_medical_ui/view/my_getx_home_page.dart';
 import 'package:get/get.dart';
 
 import 'IntroPage.dart';
 import 'MySignUpPage.dart';
-import 'TabWidget.dart';
 import 'generated/l10n.dart';
-import 'model/SubCategoryModel.dart';
+import 'model/navigation_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -24,13 +22,22 @@ Future<void> main() async {
     DeviceOrientation.portraitUp,
   ]);
   await initData();
+  //checking if local data has been initiated
+
+  print('local data created');
   print('Creating the main app after initialization');
+
   runApp(MyApp());
 }
 
 Future<void> initData() async {
   print('Starting getx service for localdata');
-  Get.put<LocalSessionController>(LocalSessionController());
+
+  var session_id = await PrefData.getSessionID();
+  if (session_id != null) {
+    Get.put<LocalSessionController>(LocalSessionController(), permanent: true);
+  }
+
   // print('Starting getx service for country');
   // await Get.putAsync<CountryController>(() async => CountryController());
 }
@@ -46,6 +53,7 @@ class MyApp extends StatelessWidget {
         S.delegate
       ],
       debugShowCheckedModeBanner: false,
+      navigatorKey: NavigationService.navigatorKey,
       title: 'Medrpha',
       theme: ThemeData(
         brightness: Brightness.light,
@@ -72,8 +80,6 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   get subCategoryModelList => null;
-  // LocalSessionController sessionController =
-  //     Get.put(LocalSessionController(), permanent: true);
 
   @override
   void initState() {
@@ -94,7 +100,9 @@ class _MyHomePageState extends State<MyHomePage> {
     // print('The value of test from local session : ${del}');
     // print(
     //     'The value of mobile number n session ${Get.find<LocalSessionController>().mySession.mobileNo} , ${Get.find<LocalSessionController>().mySession.session}');
+
     _session_id = await PrefData.getSessionID();
+    print('Session data fro PrefData call ${_session_id}');
     int themMode = await PrefData.getThemeMode();
     ConstantData.setThemePosition();
     SystemChrome.setSystemUIOverlayStyle((themMode == 0)
@@ -117,19 +125,18 @@ class _MyHomePageState extends State<MyHomePage> {
             ));
       } else {
         Timer(Duration(milliseconds: 1700), () {
-          List<SubCategoryModel> subCategoryModelList1 =
-              DataFile.getSubCategoryModel();
+          // List<SubCategoryModel> subCategoryModelList1 =
+          //     DataFile.getSubCategoryModel();
           Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                // builder: (context) => MyHome(),
-                // builder: (context) => MyPinVerification(),
-                //product Detaied page
+                builder: (context) => MyPinVerification(),
+                // builder: (context) => MyNewHomePage(),
 
+                // builder: (context) => MyHome(),
+                //product Detaied page
                 // builder: (context) => TestProduct(),
                 //new homepage new Style
-                builder: (context) => MyNewHomePage(),
-
                 //this is to check teh old pages
                 //builder: (context) => TabWidget(),
               ));
@@ -138,46 +145,46 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  void signInValue() async {
-    print('Prionting session id');
-    print(await PrefData.getSessionID());
-    print('Done');
-    _isSignIn = await PrefData.getIsSignIn();
-    _isSignIn = false;
-    _isIntro = await PrefData.getIsIntro();
-    int themMode = await PrefData.getThemeMode();
-    ConstantData.setThemePosition();
-    print("isSignIn--" + _isSignIn.toString());
-    SystemChrome.setSystemUIOverlayStyle((themMode == 0)
-        ? SystemUiOverlayStyle.light
-        : SystemUiOverlayStyle.dark);
-    _isIntro = false;
-    if (_isIntro) {
-      Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => IntroPage(),
-          ));
-    } else {
-      // _isSignIn = true;
-      print('The value of Sigin is : $_isSignIn');
-      if (!_isSignIn) {
-        Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => MySignUpPage(),
-            ));
-      } else {
-        Timer(Duration(seconds: 3), () {
-          Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                builder: (context) => TabWidget(),
-              ));
-        });
-      }
-    }
-  }
+  // void signInValue() async {
+  //   print('Prionting session id');
+  //   print(await PrefData.getSessionID());
+  //   print('Done');
+  //   _isSignIn = await PrefData.getIsSignIn();
+  //   _isSignIn = false;
+  //   _isIntro = await PrefData.getIsIntro();
+  //   int themMode = await PrefData.getThemeMode();
+  //   ConstantData.setThemePosition();
+  //   print("isSignIn--" + _isSignIn.toString());
+  //   SystemChrome.setSystemUIOverlayStyle((themMode == 0)
+  //       ? SystemUiOverlayStyle.light
+  //       : SystemUiOverlayStyle.dark);
+  //   _isIntro = false;
+  //   if (_isIntro) {
+  //     Navigator.pushReplacement(
+  //         context,
+  //         MaterialPageRoute(
+  //           builder: (context) => IntroPage(),
+  //         ));
+  //   } else {
+  //     // _isSignIn = true;
+  //     print('The value of Sigin is : $_isSignIn');
+  //     if (!_isSignIn) {
+  //       Navigator.pushReplacement(
+  //           context,
+  //           MaterialPageRoute(
+  //             builder: (context) => MySignUpPage(),
+  //           ));
+  //     } else {
+  //       Timer(Duration(seconds: 3), () {
+  //         Navigator.pushReplacement(
+  //             context,
+  //             MaterialPageRoute(
+  //               builder: (context) => TabWidget(),
+  //             ));
+  //       });
+  //     }
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {

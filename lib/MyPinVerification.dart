@@ -3,18 +3,20 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_medical_ui/util/ConstantWidget.dart';
+import 'package:flutter_medical_ui/apicalls/api_service.dart';
+import 'package:flutter_medical_ui/controller/local_session_controller.dart';
 import 'package:flutter_medical_ui/util/ConstantData.dart';
+import 'package:flutter_medical_ui/util/ConstantWidget.dart';
 import 'package:flutter_medical_ui/util/CustomDialogBox.dart';
 import 'package:flutter_medical_ui/util/PrefData.dart';
 import 'package:flutter_medical_ui/util/SizeConfig.dart';
+import 'package:flutter_medical_ui/view/my_getx_home_page.dart';
+import 'package:get/get.dart';
 import 'package:pin_input_text_field/pin_input_text_field.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'MyHome.dart';
 import 'MySignUpPage.dart';
-import 'WidgetNotificationConfirmation.dart';
-import 'generated/l10n.dart';
+import 'controller/product_controller.dart';
 import 'myWidget/my_common_widget.dart';
 
 class MyPinVerification extends StatefulWidget {
@@ -71,10 +73,12 @@ class _PhoneVerification extends State<MyPinVerification> {
         msg: 'Please enter PIN',
       );
     } else {
-      String _session_id = await PrefData.getSessionID();
-      String _mobileNo = await PrefData.getMobileNo();
-      bool _regCompleted = await PrefData.getRegCompleted();
-      bool _adminApproved = await PrefData.getAdminApproved();
+      LocalSessionController ls = Get.find<LocalSessionController>();
+
+      String _session_id = ls.mySession.session;
+      String _mobileNo = ls.mySession.mobileNo;
+      bool _regCompleted = ls.mySession.regCompleted;
+      bool _adminApproved = ls.mySession.adminApproved;
       String _pin = await PrefData.getPin();
       if (_session_id == '' ||
           _session_id == null ||
@@ -102,13 +106,36 @@ class _PhoneVerification extends State<MyPinVerification> {
           );
           _pinEditingController.clear();
         } else {
-          Timer(Duration(seconds: 1), () {
-            Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => MyHome(),
-                ));
-          });
+          print('The local controller session value ${_session_id}');
+          var response = await ApiService.getUserStatus(sessionID: _session_id);
+          if (response["status"] == "1") {
+            ls.mySession.adminApproved = response["admin"];
+            ls.mySession.regCompleted = response["completed"];
+            try {
+              print(
+                  'The value for admin approval from response : ${response["admin"]}');
+              Get.find<ProductController>()
+                  .hideProductPrice(!response["admin"]);
+              Get.find<ProductController>().regCompleted.value =
+                  response["completed"];
+              Get.find<ProductController>().adminApproved.value =
+                  response["admin"];
+              print(
+                  'The value of show product is : ${Get.find<ProductController>().showProduct}');
+            } finally {
+              await PrefData.setAdminApproved(response["admin"]);
+              await PrefData.setRegCompleted(response["completed"]);
+              Timer(Duration(microseconds: 300), () {
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      //old template page
+                      //builder: (context) => MyHome(),
+                      builder: (context) => MyNewHomePage(),
+                    ));
+              });
+            }
+          }
         }
       }
     }

@@ -22,9 +22,9 @@ class PrefData {
     bool regC = prefs.getBool(regCompleted) ?? false;
     bool adminapp = prefs.getBool(adminApproved) ?? false;
 
-    LocalSession ls =
-        await LocalSession(session, mobile, regC, adminapp, newpin);
-    print('Local data received');
+    LocalSession ls = LocalSession(session, mobile, regC, adminapp, newpin);
+    print('Local data received with session id ${session}');
+
     return ls;
   }
 
