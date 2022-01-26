@@ -24,7 +24,7 @@ class OrderHistoryController extends GetxController {
         loaded(false);
         var orderRes =
             await ApiService.getOrderHistoryData(sessionID: _sessionID);
-        print(orderRes);
+        // print(orderRes);
         if (orderRes != null) {
           orderHistory = orderRes.obs;
         }

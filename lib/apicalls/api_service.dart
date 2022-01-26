@@ -5,6 +5,7 @@ import 'package:flutter_medical_ui/model/category.dart';
 import 'package:flutter_medical_ui/model/city.dart';
 import 'package:flutter_medical_ui/model/country.dart';
 import 'package:flutter_medical_ui/model/customer.dart';
+import 'package:flutter_medical_ui/model/order_details.dart';
 import 'package:flutter_medical_ui/model/order_history.dart';
 import 'package:flutter_medical_ui/model/pin.dart';
 import 'package:flutter_medical_ui/model/product.dart';
@@ -625,6 +626,39 @@ class ApiService {
       }
     } else {
       return tempOrderHistory;
+    }
+  }
+
+  static Future<dynamic> getOrderDetailsData(
+      {String sessionID, String orderId}) async {
+    List<OrderDetails> tempOrderDetails = [];
+    var url = Uri.parse('https://api.medrpha.com/api/order/orderdetail');
+    Map jsonBody = {"sessid": sessionID, "order_id": orderId};
+    var response = await client.post(url, body: jsonBody);
+
+    if (response.statusCode == 200) {
+      var jsonObj = response.body;
+      var jsonData = json.decode(jsonObj.toString());
+      // print(jsonData);
+      if (jsonData['status'] == "0" || jsonData['status'] == null) {
+        return {"status": "0"};
+      } else {
+        var dataArray = jsonData['data'];
+        if (dataArray == null) {
+          return {"status": "0"};
+        } else {
+          tempOrderDetails = orderDetailsFromJson(json.encode(dataArray));
+          return {
+            "status": "1",
+            "order_datetime": jsonData['order_datetime'],
+            "order_no": jsonData['order_no'],
+            "order_amount": jsonData['order_amount'],
+            "orders": tempOrderDetails,
+          };
+        }
+      }
+    } else {
+      return {"status": "0"};
     }
   }
 }

@@ -10,6 +10,8 @@ import 'package:flutter_medical_ui/controller/product_controller.dart';
 import 'package:flutter_medical_ui/model/category.dart';
 import 'package:flutter_medical_ui/model/navigation_service.dart';
 import 'package:flutter_medical_ui/model/product.dart';
+import 'package:flutter_medical_ui/myWidget/loading.dart';
+import 'package:flutter_medical_ui/myWidget/no_item_found.dart';
 import 'package:flutter_medical_ui/myWidget/product_widget.dart';
 import 'package:flutter_medical_ui/util/ConstantData.dart';
 import 'package:flutter_medical_ui/util/PrefData.dart';
@@ -17,7 +19,7 @@ import 'package:flutter_medical_ui/view/my_profile_page.dart';
 import 'package:get/get.dart';
 
 import '../MyPinVerification.dart';
-import '../OrderDetailPage.dart';
+import '../my_order_history.dart';
 
 class MyNewHomePage extends StatelessWidget {
   // const MyNewHomePage({Key key}) : super(key: key);
@@ -97,8 +99,8 @@ class MyNewHomePage extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => OrderDetailPage(),
-                      // builder: (context) => MyOrderHistory(),
+                      // builder: (context) => OrderDetailPage(),
+                      builder: (context) => MyOrderHistory(),
                     ),
                   );
                 },
@@ -271,37 +273,13 @@ class MyNewHomePage extends StatelessWidget {
                       },
                     );
                   } else {
-                    return Container(
-                        child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset(
-                          ConstantData.assetsPath + "not_found.png",
-                          height: 130,
-                        ),
-                        SizedBox(height: 30),
-                        Text(
-                          'Nothing to display',
-                          style: TextStyle(
-                            color: Colors.red,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ],
-                    ));
+                    return NoItemFound();
                   }
                 },
               ),
             );
           else
-            return Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircularProgressIndicator(),
-                ],
-              ),
-            );
+            return loading();
         }),
         Obx(() {
           if (productController.loaded.value) {
