@@ -34,6 +34,7 @@ class Product {
     this.quantity,
     this.cartquantity,
     this.inCart,
+    this.subtotal,
   });
 
   String pid;
@@ -44,27 +45,43 @@ class Product {
   String productName;
   String categorystr;
   String compnaystr;
-  String newmrp;
-  String oldmrp;
-  String percent;
   String saleqtytypestr;
   String prodsaletypedetails;
-  String quantity;
+  int quantity;
+  double newmrp;
+  double oldmrp;
+  String percent;
+  var subtotal;
   var cartquantity;
   var inCart;
 
   factory Product.fromJson(Map<String, dynamic> json) {
     // print('Cart Qty for ${json["product_name"]} is ${json["cartquantity"]}');
-    var qty, incrt;
+    var qty, incrt, s_total;
+
+    qty = int.tryParse(json["cartquantity"]) == null
+        ? RxInt(0)
+        : RxInt(int.parse(json["cartquantity"]));
+    s_total = json["subtotal"] == null
+        ? RxDouble(0.00)
+        : RxDouble(double.parse(json["subtotal"]));
     if (json["cartquantity"] == null || json["cartquantity"] == '') {
-      print(json["cartquantity"]);
-      qty = RxString("0");
       incrt = RxBool(false);
     } else {
-      qty = RxString(json["cartquantity"]);
       incrt = RxBool(true);
     }
-
+    // if (json["subtotal"] == null || json["subtotal"] == '') {
+    //   if (qty.value == 0) {
+    //     s_total = RxDouble(0.00);
+    //   } else {
+    //     double productPrice = double.tryParse(json["newmrp"]) == null
+    //         ? 0.00
+    //         : double.parse(json["newmrp"]);
+    //     print('Product price: ${productPrice}');
+    //     s_total = RxString((qty.value * productPrice).toString());
+    //   }
+    // }
+    print('Product sub total : ${s_total}');
     return Product(
       pid: json["pid"],
       wpid: json["wpid"],
@@ -74,14 +91,15 @@ class Product {
       productName: json["product_name"],
       categorystr: json["categorystr"],
       compnaystr: json["compnaystr"],
-      newmrp: json["newmrp"],
-      oldmrp: json["oldmrp"],
+      newmrp: double.parse(json["newmrp"]),
+      oldmrp: double.parse(json["oldmrp"]),
       percent: json["percent"],
       saleqtytypestr: json["saleqtytypestr"],
       prodsaletypedetails: json["prodsaletypedetails"],
-      quantity: json["quantity"],
+      quantity: int.parse(json["quantity"]),
       cartquantity: qty,
       inCart: incrt,
+      subtotal: s_total,
     );
   }
 
@@ -102,5 +120,6 @@ class Product {
         "quantity": quantity,
         "cartquantity": cartquantity,
         "inCart": inCart,
+        "subtotal": subtotal,
       };
 }

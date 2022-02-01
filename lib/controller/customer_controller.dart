@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 
 import 'local_session_controller.dart';
 
-class CustomerController extends GetxService {
+class CustomerController extends GetxController {
   var customer;
   var loaded = false.obs;
   var dataSaved = true.obs;

@@ -33,7 +33,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   country_code_picker: ^1.7.0
   pin_input_text_field: ^3.3.0
-  shared_preferences: ^0.5.2
+  shared_preferences: ^2.0.12
   transformer_page_view: ^0.1.6
   smooth_page_indicator: ^0.2.0
   shape_of_view: ^1.0.2

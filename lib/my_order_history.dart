@@ -76,7 +76,7 @@ class MyOrderHistory extends StatelessWidget {
                             ),
                           );
                         })
-                : CircularProgressIndicator(),
+                : Container(child: Center(child: CircularProgressIndicator())),
           )),
     );
   }

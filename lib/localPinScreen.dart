@@ -65,7 +65,12 @@ class _PhoneVerification extends State<LocalPinScreen> {
     await PrefData.setRegCompleted(complete_reg_status);
     await PrefData.setPin(pin);
     try {
-      Get.find<LocalSessionController>();
+      LocalSessionController ls = Get.find<LocalSessionController>();
+      ls.mySession.mobileNo = mobile;
+      ls.mySession.session = session;
+      ls.mySession.pin = pin;
+      ls.mySession.regCompleted.value = complete_reg_status;
+      ls.mySession.adminApproved.value = adminstatus;
     } catch (e) {
       Get.put<LocalSessionController>(LocalSessionController(),
           permanent: true);

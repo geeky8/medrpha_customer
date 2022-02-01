@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_medical_ui/AddToCartPage.dart';
+import 'package:flutter/painting.dart';
 import 'package:flutter_medical_ui/controller/cart_controller.dart';
 import 'package:flutter_medical_ui/controller/category_controller.dart';
 import 'package:flutter_medical_ui/controller/country_controller.dart';
@@ -19,6 +19,7 @@ import 'package:flutter_medical_ui/view/my_profile_page.dart';
 import 'package:get/get.dart';
 
 import '../MyPinVerification.dart';
+import '../my_checkout_page.dart';
 import '../my_order_history.dart';
 
 class MyNewHomePage extends StatelessWidget {
@@ -172,7 +173,84 @@ class MyNewHomePage extends StatelessWidget {
   }
 
   static buildViewCart() {
-    return AddToCartPage();
+    //return AddToCartPage();
+    LocalSessionController ls = Get.find<LocalSessionController>();
+    String _session = ls.getSessionValue();
+    CartController cc = Get.find<CartController>();
+    return Container(
+      width: double.infinity,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            height: 15,
+          ),
+          Obx(
+            () => cc.myCart.length > 0
+                ? Expanded(
+                    child: Obx(() => ListView.builder(
+                        itemCount: cc.myCart.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          Product product = cc.myCart[index];
+                          return ProductWidget(
+                            // width: width,
+                            product: product,
+                            session: _session,
+                            productPage: false,
+                          );
+                        })),
+                  )
+                : Expanded(
+                    child: Center(
+                        child: NoItemFound(
+                    msg: 'No Product in Cart',
+                  ))),
+          ),
+          Obx(() => Padding(
+                padding: EdgeInsets.all(10),
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  children: [
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Total Payable',
+                          style: TextStyle(
+                            fontSize: 16,
+                          ),
+                        ),
+                        Text(
+                          ' \u{20B9}${cc.finalPrice.value.toStringAsFixed(2)}',
+                          style: TextStyle(
+                              fontSize: 20, fontWeight: FontWeight.bold),
+                        ),
+                      ],
+                    ),
+                    Center(
+                      child: ElevatedButton(
+                        style: ConstantData.btnStylePrimary,
+                        onPressed: cc.myCart.length > 0
+                            ? () {
+                                Navigator.push(
+                                  NavigationService.navigatorKey.currentContext,
+                                  MaterialPageRoute(
+                                    builder: (context) => MyCheckoutPage(),
+                                  ),
+                                );
+                              }
+                            : () {},
+                        child:
+                            Obx(() => Text('Checkout ${cc.cartCount} Item(s)')),
+                      ),
+                    ),
+                  ],
+                ),
+              )),
+        ],
+      ),
+    );
   }
 
   static userProfile(context, {newUser = false}) {
@@ -195,6 +273,8 @@ class MyNewHomePage extends StatelessWidget {
     print(ls.mySession.adminApproved);
     print(
         'The total number of items in the cart is : ${Get.find<CartController>().cartCount.value.toString()}');
+    print(
+        'Total count of product in cart array is : ${Get.find<CartController>().myCart.value.length} ');
     // var _adminApprove = ls.mySession.adminApproved.obs;
     // var _regCompleted = ls.mySession.regCompleted.obs;
     return Column(

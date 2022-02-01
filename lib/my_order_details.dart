@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_medical_ui/myWidget/loading.dart';
 import 'package:get/get.dart';
 
 import 'controller/order_details_controller.dart';
@@ -150,7 +149,7 @@ class MyOrderDetails extends StatelessWidget {
                                                           ),
                                                         ),
                                                         Text(
-                                                          ' X ',
+                                                          ' x ',
                                                           style: TextStyle(
                                                             color:
                                                                 Colors.blueGrey,
@@ -284,7 +283,7 @@ class MyOrderDetails extends StatelessWidget {
                           ),
                         ],
                       )
-                : loading(),
+                : Container(child: Center(child: CircularProgressIndicator())),
           )),
     );
   }

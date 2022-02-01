@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_medical_ui/apicalls/api_service.dart';
+import 'package:flutter_medical_ui/controller/cart_controller.dart';
 import 'package:flutter_medical_ui/controller/product_controller.dart';
 import 'package:flutter_medical_ui/model/product.dart';
 import 'package:flutter_medical_ui/util/ConstantData.dart';
@@ -11,18 +12,23 @@ import 'package:get/get.dart';
 
 class ProductWidget extends StatelessWidget {
   TextEditingController qtyController = TextEditingController();
+
   ProductWidget({
     Key key,
-    @required this.width,
+    this.width,
     @required this.product,
     @required this.session,
+    this.productPage = true,
   }) : super(key: key);
 
   final double width;
   final Product product;
   final String session;
+  final productPage;
   static const bool showInputBox = false;
+  var qtyTxt = "0".obs;
   String _beforeChange;
+
   getCartButton(
       {@required var icon,
       @required Function function,
@@ -69,13 +75,12 @@ class ProductWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     String qty = '0';
-    // final LocalSessionController ls = Get.find<LocalSessionController>();
     ProductController pc = Get.find<ProductController>();
-    qtyController.text = product.cartquantity.value;
-    // final String _session = ls.getSessionValue();
-    // final bool regComplete = ls.getProfileCompletionStatus();
-    // final bool adminApproval = ls.getAdminAprovalStatus();
-    // print('Product ${product.productName} in cart : ${product.inCart.value}');
+    CartController cc = Get.find<CartController>();
+    qtyController.text = cc.getItemCount(product);
+    qtyTxt.value = cc.getItemCount(product);
+    //qtyController.text = product.cartquantity.value;
+    // print('The calculated sub total is : ${product.subtotal}');
     return Card(
       margin: EdgeInsets.all(3),
       child: Container(
@@ -149,7 +154,7 @@ class ProductWidget extends StatelessWidget {
                                       width: 10,
                                     ),
                                     Text(
-                                      product.quantity,
+                                      product.quantity.toString(),
                                       style: TextStyle(
                                         color: Colors.blueGrey,
                                         fontSize: 14,
@@ -161,63 +166,8 @@ class ProductWidget extends StatelessWidget {
                                 SizedBox(
                                   height: 5,
                                 ),
-                                Row(
-                                  mainAxisSize: MainAxisSize.max,
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      product.newmrp,
-                                      style: TextStyle(
-                                        color: Colors.pinkAccent.shade400,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-
-                                    SizedBox(
-                                      width: 15,
-                                      height: 25,
-                                    ),
-                                    // Add button clicked
-                                  ],
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  children: [
-                                    SizedBox(
-                                      height: 20,
-                                    ),
-                                    Text(
-                                      'MRP : ',
-                                      style: TextStyle(
-                                        color: Colors.black45,
-                                        fontSize: 13,
-                                        fontStyle: FontStyle.normal,
-                                      ),
-                                    ),
-                                    Text(
-                                      product.oldmrp,
-                                      style: TextStyle(
-                                        color: Colors.black45,
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.bold,
-                                        decoration: TextDecoration.lineThrough,
-                                      ),
-                                    ),
-                                    SizedBox(
-                                      width: 20,
-                                    ),
-                                    Text(
-                                      product.percent,
-                                      style: TextStyle(
-                                        color: Colors.greenAccent.shade700,
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                                buildPriceRow(),
+                                buildSavingsRow(),
                                 SizedBox(
                                   height: 5,
                                 ),
@@ -227,14 +177,14 @@ class ProductWidget extends StatelessWidget {
                                     Visibility(
                                       visible: !product.inCart.value,
                                       child: SizedBox(
-                                        height: 20,
+                                        height: 22,
                                         width: 70,
                                         child: ElevatedButton(
                                           onPressed: addToCart,
                                           child: const Text(
                                             'Add',
                                             style: TextStyle(
-                                              fontSize: 10,
+                                              fontSize: 11,
                                             ),
                                           ),
                                         ),
@@ -313,8 +263,7 @@ class ProductWidget extends StatelessWidget {
                                                       width: 15,
                                                     ),
                                                     getCustomText(
-                                                      product
-                                                          .cartquantity.value,
+                                                      qtyTxt.value,
                                                       ConstantData
                                                           .mainTextColor,
                                                       2,
@@ -369,96 +318,256 @@ class ProductWidget extends StatelessWidget {
     );
   }
 
-  addToCart() async {
-    // print(product.cartquantity.value);
-    // print('Add to cahrt btn ${product.pid} clicked for add btn');
-    // product.inCart(true);
-    product.cartquantity.value = '1';
-    String max = product.quantity;
-    int maxQty = int.tryParse(max) == null ? 0 : int.parse(max);
-    if (maxQty > 0) {
-      int responseStatus =
-          await ApiService.addNewItem(product: product, session: session);
-      print('Response ststus :${responseStatus}');
-      product.cartquantity.value = responseStatus.toString();
-      product.inCart(true);
+  Row buildSavingsRow() {
+    if (productPage) {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          SizedBox(
+            height: 20,
+          ),
+          Text(
+            'MRP : ',
+            style: TextStyle(
+              color: Colors.black45,
+              fontSize: 13,
+              fontStyle: FontStyle.normal,
+            ),
+          ),
+          Text(
+            '\u{20B9} ' + product.oldmrp.toString(),
+            style: TextStyle(
+              color: Colors.black45,
+              fontSize: 13,
+              fontWeight: FontWeight.bold,
+              decoration: TextDecoration.lineThrough,
+            ),
+          ),
+          SizedBox(
+            width: 20,
+          ),
+          Text(
+            product.percent ?? '',
+            style: TextStyle(
+              color: Colors.greenAccent.shade700,
+              fontSize: 14,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      );
     } else {
-      print('Item out of stocl');
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          SizedBox(
+            height: 20,
+          ),
+          Text(
+            'Saving : ',
+            style: TextStyle(
+              color: Colors.black45,
+              fontSize: 13,
+              fontStyle: FontStyle.normal,
+            ),
+          ),
+          Text(
+            '\u{20B9} ' +
+                ((product.oldmrp - product.newmrp) * product.cartquantity.value)
+                    .toStringAsFixed(2),
+            style: TextStyle(
+              color: Colors.green,
+              fontSize: 14,
+            ),
+          ),
+        ],
+      );
+    }
+  }
+
+  Row buildPriceRow() {
+    if (productPage) {
+      return Row(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            '\u{20B9} ' + product.newmrp.toString(),
+            style: TextStyle(
+              color: Colors.pinkAccent.shade400,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+
+          SizedBox(
+            width: 15,
+            height: 25,
+          ),
+          // Add button clicked
+        ],
+      );
+    } else {
+      return Row(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Obx(() => Text(
+                '\u{20B9} ' +
+                    (product.oldmrp * product.cartquantity.value).toString(),
+                style: TextStyle(
+                  color: Colors.black45,
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                  decoration: TextDecoration.lineThrough,
+                ),
+              )),
+
+          SizedBox(
+            width: 8,
+          ),
+          Obx(
+            () => Text(
+              '\u{20B9} ' +
+                  (product.newmrp * product.cartquantity.value).toString(),
+              style: TextStyle(
+                color: Colors.pinkAccent.shade400,
+                fontSize: 15,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          SizedBox(
+            width: 8,
+          ),
+
+          // Add button clicked
+        ],
+      );
+    }
+  }
+
+  addToCart() async {
+    try {
+      Get.find<CartController>();
+    } catch (e) {
+      Get.put<CartController>(CartController());
+    } finally {
+      CartController cc = Get.find<CartController>();
+      String x = qtyController.text;
+      int maxQty = product.quantity;
+      int qty = int.tryParse(x) == null ? 0 : int.parse(x);
+      if (maxQty > 0) {
+        int responseStatus =
+            await ApiService.addNewItem(product: product, session: session);
+        print('Response ststus :${responseStatus}');
+        //product.cartquantity.value = responseStatus.toString();
+        qty++;
+        qtyController.text = qty.toString();
+        qtyTxt.value = qty.toString();
+        product.inCart(true);
+        cc.incrementCount(product);
+      } else {
+        print('Item out of stocl');
+      }
     }
   }
 
   plusItem() async {
-    print('One product added');
-    String x = product.cartquantity.value;
-    String max = product.quantity;
-    int qty = int.tryParse(x) == null ? 0 : int.parse(x);
-    int maxQty = int.tryParse(max) == null ? 10000 : int.parse(max);
-    // print('Max qty : ${maxQty}, Qty: ${qty}');
-    if (qty < maxQty) {
-      var newProducts =
-          await ApiService.plusItem(product: product, session: session);
-      if (newProducts == 1) {
-        print('New product added successful');
-        qty++;
-        product.cartquantity.value = qty.toString();
-        product.inCart(true);
+    try {
+      Get.find<CartController>();
+    } catch (e) {
+      Get.put<CartController>(CartController());
+    } finally {
+      CartController cc = Get.find<CartController>();
+      print('One product added/incremented');
+      String x = qtyController.text; //product.cartquantity.value;
+      int maxQty = product.quantity;
+      int qty = int.tryParse(x) == null ? 0 : int.parse(x);
+      // print('Max qty : ${maxQty}, Qty: ${qty}');
+      if (qty < maxQty) {
+        var newProducts =
+            await ApiService.plusItem(product: product, session: session);
+        if (newProducts == 1) {
+          // print('New product added successful');
+          qty++;
+          qtyController.text = qty.toString();
+          qtyTxt.value = qty.toString();
+          product.inCart(true);
+          cc.incrementCount(product);
+        } else {
+          print('Product status not 1');
+        }
       } else {
-        print('Product status not 1');
+        print('Product max qty issue');
+        //do nothing
       }
-    } else {
-      print('Product max qty issue');
-      //do nothing
     }
   }
 
   clearItem() async {
-    print('Clear Item');
-    String x = product.cartquantity.value;
-    int qty = int.tryParse(x) == null ? 0 : int.parse(x);
-    bool updateQty = false;
-
-    //call deteleCart
-    var delStatus =
-        await ApiService.deleteItem(product: product, session: session);
-    if (delStatus == 1) {
-      updateQty = true;
-    }
-
-    if (updateQty) {
-      qty = 0;
-      if (qty == 0) {
-        product.inCart(false);
-      }
-      product.cartquantity.value = qty.toString();
-    }
-  }
-
-  minusItem() async {
-    print('One product deleted');
-    String x = product.cartquantity.value;
-    int qty = int.tryParse(x) == null ? 0 : int.parse(x);
-    bool updateQty = false;
-    if (qty > 1) {
-      //call cartMinus
-      var newProducts =
-          await ApiService.minusItem(product: product, session: session);
-      if (newProducts == 1) {
-        updateQty = true;
-      }
-    } else {
+    try {
+      Get.find<CartController>();
+    } catch (e) {
+      Get.put<CartController>(CartController());
+    } finally {
+      CartController cc = Get.find<CartController>();
+      String x = qtyController.text; //product.cartquantity.value;
+      int qty = int.tryParse(x) == null ? 0 : int.parse(x);
+      print('Clear Item');
+      bool updateQty = false;
       //call deteleCart
       var delStatus =
           await ApiService.deleteItem(product: product, session: session);
       if (delStatus == 1) {
         updateQty = true;
       }
-    }
-    if (updateQty) {
-      qty > 0 ? qty-- : qty;
-      if (qty == 0) {
-        product.inCart(false);
+
+      if (updateQty) {
+        qty = 0;
+        if (qty == 0) {
+          product.inCart(false);
+        }
+        cc.removeFromCart(product, allQty: true);
       }
-      product.cartquantity.value = qty.toString();
+    }
+  }
+
+  minusItem() async {
+    try {
+      Get.find<CartController>();
+    } catch (e) {
+      Get.put<CartController>(CartController());
+    } finally {
+      CartController cc = Get.find<CartController>();
+      String x = qtyController.text; //product.cartquantity.value;
+      int qty = int.tryParse(x) == null ? 0 : int.parse(x);
+      print('One product deleted');
+      bool updateQty = false;
+      if (qty > 1) {
+        //call cartMinus
+        var newProducts =
+            await ApiService.minusItem(product: product, session: session);
+        if (newProducts == 1) {
+          updateQty = true;
+        }
+      } else {
+        //call deteleCart
+        var delStatus =
+            await ApiService.deleteItem(product: product, session: session);
+        if (delStatus == 1) {
+          updateQty = true;
+        }
+      }
+      if (updateQty) {
+        qty > 0 ? qty-- : qty;
+        if (qty == 0) {
+          product.inCart(false);
+        }
+        qtyController.text = qty.toString();
+        qtyTxt.value = qty.toString();
+        cc.decrementCount(product);
+      }
     }
   }
 
@@ -487,57 +596,49 @@ class ProductWidget extends StatelessWidget {
   }
 
   checkAndUpdateCartQty(context) async {
-    print('Calling update qty after check');
-    String newQty = qtyController.text;
-    String oldQty = product.cartquantity.value;
-    String maxQty = product.quantity;
+    try {
+      Get.find<CartController>();
+    } catch (e) {
+      Get.put<CartController>(CartController());
+    } finally {
+      CartController cc = Get.find<CartController>();
+      String x = qtyController.text; //product.cartquantity.value;
+      int qty = int.tryParse(x) == null ? 0 : int.parse(x);
 
-    if (int.tryParse(newQty) == null) {
-      ScaffoldMessenger.of(context).hideCurrentSnackBar();
-      const errorSnackBar = SnackBar(
-        backgroundColor: Colors.red,
-        content: Text('Incorrect Quantity. Can\'t  update!!',
-            style: TextStyle(
-              color: Colors.white,
-            )),
-      );
-      ScaffoldMessenger.of(context).showSnackBar(errorSnackBar);
-    } else {
-      int oldQtyVal = int.tryParse(oldQty) == null ? 0 : int.parse(oldQty);
-      int maxQtyVal = int.tryParse(maxQty) == null ? 0 : int.parse(maxQty);
-      int newQtyVal = int.parse(newQty);
-      if (newQtyVal > maxQtyVal) {
+      print('Calling update qty after check');
+      String newQty = qtyController.text;
+      String oldQty = qtyTxt.value;
+      int maxQtyVal = product.quantity;
+
+      if (int.tryParse(newQty) == null) {
         ScaffoldMessenger.of(context).hideCurrentSnackBar();
         const errorSnackBar = SnackBar(
-          backgroundColor: Colors.redAccent,
-          content: Text(
-              'Your order quantity more than available quantity. Can\'t  update!!',
-              style: TextStyle(
-                color: Colors.white,
-              )),
-        );
-        ScaffoldMessenger.of(context).showSnackBar(errorSnackBar);
-      } else if (newQtyVal <= 0) {
-        ScaffoldMessenger.of(context).hideCurrentSnackBar();
-        const errorSnackBar = SnackBar(
-          backgroundColor: Colors.redAccent,
-          content: Text('Your order quantity can\'t be less than one!!',
+          backgroundColor: Colors.red,
+          content: Text('Incorrect Quantity. Can\'t  update!!',
               style: TextStyle(
                 color: Colors.white,
               )),
         );
         ScaffoldMessenger.of(context).showSnackBar(errorSnackBar);
       } else {
-        ScaffoldMessenger.of(context).hideCurrentSnackBar();
-        var newProducts = await ApiService.updateQuantityforItem(
-            product: product, session: session, newQuantity: newQty);
-        if (newProducts == 1) {
-          print('New product added successful');
-          product.cartquantity.value = newQty;
-          product.inCart(true);
+        int oldQtyVal = int.parse(oldQty);
+        int newQtyVal = int.parse(newQty);
+        if (newQtyVal > maxQtyVal) {
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
           const errorSnackBar = SnackBar(
-            backgroundColor: Colors.green,
-            content: Text('Quantity Successfully Updated!!',
+            backgroundColor: Colors.redAccent,
+            content: Text(
+                'Your order quantity more than available quantity. Can\'t  update!!',
+                style: TextStyle(
+                  color: Colors.white,
+                )),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(errorSnackBar);
+        } else if (newQtyVal <= 0) {
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          const errorSnackBar = SnackBar(
+            backgroundColor: Colors.redAccent,
+            content: Text('Your order quantity can\'t be less than one!!',
                 style: TextStyle(
                   color: Colors.white,
                 )),
@@ -545,16 +646,36 @@ class ProductWidget extends StatelessWidget {
           ScaffoldMessenger.of(context).showSnackBar(errorSnackBar);
         } else {
           ScaffoldMessenger.of(context).hideCurrentSnackBar();
-          const errorSnackBar = SnackBar(
-            backgroundColor: Colors.redAccent,
-            content:
-                Text('Your order quantity can\'t was not updated. Try later!!',
-                    style: TextStyle(
-                      color: Colors.white,
-                    )),
-          );
-          ScaffoldMessenger.of(context).showSnackBar(errorSnackBar);
-          print('Product status not 1');
+          var newProducts = await ApiService.updateQuantityforItem(
+              product: product, session: session, newQuantity: newQty);
+          if (newProducts == 1) {
+            print('New product added successful');
+            qtyController.text = qty.toString();
+            qtyTxt.value = qty.toString();
+            cc.updateCount(product, oldQtyVal, newQtyVal);
+
+            product.inCart(true);
+            const successSnackBar = SnackBar(
+              backgroundColor: Colors.green,
+              content: Text('Quantity Successfully Updated!!',
+                  style: TextStyle(
+                    color: Colors.white,
+                  )),
+            );
+            ScaffoldMessenger.of(context).showSnackBar(successSnackBar);
+          } else {
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            const errorSnackBar = SnackBar(
+              backgroundColor: Colors.redAccent,
+              content: Text(
+                  'Your order quantity can\'t was not updated. Try later!!',
+                  style: TextStyle(
+                    color: Colors.white,
+                  )),
+            );
+            ScaffoldMessenger.of(context).showSnackBar(errorSnackBar);
+            print('Product status not 1');
+          }
         }
       }
     }
@@ -562,7 +683,7 @@ class ProductWidget extends StatelessWidget {
 
   showTextBox(context) {
     print('This is to show text box');
-    qtyController.text = product.cartquantity.value;
+    qtyController.text = qtyTxt.value;
     final snackBar = SnackBar(
       duration: Duration(seconds: 30),
       content: Row(

@@ -9,6 +9,7 @@ import 'package:flutter_medical_ui/model/order_details.dart';
 import 'package:flutter_medical_ui/model/order_history.dart';
 import 'package:flutter_medical_ui/model/pin.dart';
 import 'package:flutter_medical_ui/model/product.dart';
+import 'package:flutter_medical_ui/model/shipping_address.dart';
 import 'package:flutter_medical_ui/model/state.dart';
 import 'package:http/http.dart' as http;
 
@@ -56,7 +57,7 @@ class ApiService {
       "sessid": session,
       "pid": product.pid,
       "priceID": product.priceId,
-      "quantity": product.quantity,
+      "quantity": product.quantity.toString(),
     };
     var url = Uri.parse('https://api.medrpha.com/api/cart/cartplus');
     var response = await client.post(url, body: requestBody);
@@ -90,8 +91,8 @@ class ApiService {
       "sessid": session,
       "pid": product.pid,
       "priceID": product.priceId,
-      "quantity": product.quantity,
-      "qtyfield": newQuantity
+      "quantity": product.quantity.toString(),
+      "qtyfield": newQuantity.toString()
     };
     var url = Uri.parse('https://api.medrpha.com/api/cart/updatequantity');
     var response = await client.post(url, body: requestBody);
@@ -394,6 +395,39 @@ class ApiService {
     }
   }
 
+  static Future<dynamic> checkoutCartItems(
+      {String sessionID, int paymentMode, double finalPrice}) async {
+    var url = Uri.parse('https://api.medrpha.com/api/checkout/checkout');
+    Map jsonBody = {
+      "sessid": sessionID,
+      "paymode": paymentMode.toString(),
+      "final": finalPrice.toString(),
+    };
+    print(jsonBody);
+    var response = await client.post(url, body: jsonBody);
+
+    if (response.statusCode == 200) {
+      var jsonObj = response.body;
+      var jsonData = json.decode(jsonObj.toString());
+      // print(jsonData);
+      if (jsonData['status'] == "0" || jsonData['status'] == null) {
+        return {"status": '0'};
+      } else {
+        String order_id = jsonData['order_id'];
+        Map resData = {
+          "status": "1",
+          "order_id": order_id,
+        };
+        return resData;
+      }
+    } else {
+      return {
+        "status": '0',
+        "code": response.statusCode,
+      };
+    }
+  }
+
   //Static function to load product
   static Future<List<Product>> getAllProduct(
       {String sessionID, catId = '', productName = ''}) async {
@@ -597,6 +631,32 @@ class ApiService {
         return dataArray == null
             ? tempCustomer
             : customerFromJson(json.encode(dataArray));
+      }
+    } else {
+      return tempCustomer;
+    }
+  }
+
+  static Future<ShippingAddress> getShippingAddressData(
+      {String sessionID}) async {
+    ShippingAddress tempCustomer;
+    var url = Uri.parse('https://api.medrpha.com/api/order/shippingaddress');
+    Map jsonBody = {
+      "sessid": sessionID,
+    };
+    var response = await client.post(url, body: jsonBody);
+    print(jsonBody);
+    if (response.statusCode == 200) {
+      var jsonObj = response.body;
+      var jsonData = json.decode(jsonObj.toString());
+      if (jsonData['status'] == "0" || jsonData['status'] == null) {
+        return tempCustomer;
+      } else {
+        var dataArray = jsonData['data'];
+        print(dataArray);
+        return dataArray == null
+            ? tempCustomer
+            : shippingAddressFromJson(json.encode(dataArray));
       }
     } else {
       return tempCustomer;

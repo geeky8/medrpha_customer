@@ -43,8 +43,8 @@ class LocalSessionController extends GetxService {
     Get.put<StateController>(StateController(), permanent: true);
     Get.put<CityController>(CityController(), permanent: true);
     Get.put<PinController>(PinController(), permanent: true);
-    Get.put<CustomerController>(CustomerController(), permanent: true);
-    Get.put<CartController>(CartController(), permanent: true);
+    Get.put<CustomerController>(CustomerController());
+    Get.put<CartController>(CartController());
   }
 
   String getSessionValue() {

@@ -79,7 +79,7 @@ class ProductView extends StatelessWidget {
                         width: 10,
                       ),
                       Text(
-                        product.quantity,
+                        product.quantity.toString(),
                         style: TextStyle(
                           color: Colors.blueGrey,
                           fontSize: 14,
@@ -98,7 +98,7 @@ class ProductView extends StatelessWidget {
                           mainAxisSize: MainAxisSize.max,
                           children: [
                             Text(
-                              product.newmrp,
+                              product.newmrp.toString(),
                               style: TextStyle(
                                 color: Colors.pinkAccent,
                                 fontSize: 16,
@@ -119,7 +119,7 @@ class ProductView extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              product.oldmrp,
+                              product.oldmrp.toString(),
                               style: TextStyle(
                                 color: Colors.black45,
                                 fontSize: 16,

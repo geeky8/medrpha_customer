@@ -1,16 +1,16 @@
-import 'package:country_code_picker/country_code_picker.dart';
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_medical_ui/MyPhoneVerification.dart';
-import 'package:flutter_medical_ui/util/ConstantWidget.dart';
 import 'package:flutter_medical_ui/util/ConstantData.dart';
+import 'package:flutter_medical_ui/util/ConstantWidget.dart';
 import 'package:flutter_medical_ui/util/PrefData.dart';
 import 'package:flutter_medical_ui/util/SizeConfig.dart';
 import 'package:http/http.dart' as http;
-import 'dart:convert';
-import 'MySignInPage.dart';
+
 import 'generated/l10n.dart';
 import 'myWidget/my_common_widget.dart';
 
@@ -69,7 +69,7 @@ class _SignUpPage extends State<MySignUpPage> {
         setState(() {
           _buttonState = true;
         });
-        Navigator.push(
+        Navigator.pushReplacement(
             context,
             MaterialPageRoute(
               builder: (context) => MyPhoneVerification(mobile),
@@ -83,6 +83,7 @@ class _SignUpPage extends State<MySignUpPage> {
         _buttonState = true;
       });
     }
+    _buttonState = true;
   }
 
   setTheme() async {
@@ -106,6 +107,7 @@ class _SignUpPage extends State<MySignUpPage> {
     } else {
       getOtp(mob);
     }
+    _buttonState = true;
   }
 
   @override
@@ -119,66 +121,52 @@ class _SignUpPage extends State<MySignUpPage> {
     double radius = ConstantWidget.getPercentSize(subHeight, 20);
     double fontSize = ConstantWidget.getPercentSize(subHeight, 25);
 
-    return WillPopScope(
-        child: Scaffold(
-          backgroundColor: ConstantData.bgColor,
-          body: SafeArea(
-            child: Container(
-              padding: EdgeInsets.all(
-                  ConstantWidget.getScreenPercentSize(context, 2.5)),
-              child: ListView(
-                children: [
-                  SizedBox(
-                    height: ConstantWidget.getScreenPercentSize(context, 10),
-                  ),
-                  Center(
-                    child: Image.asset(
-                      ConstantData.assetsPath + "logo_transparent.png",
-                      height: height,
-                    ),
-                  ),
-                  SizedBox(
-                    height: ConstantWidget.getScreenPercentSize(context, 1.5),
-                  ),
-                  Center(
-                    child: Text(
-                      'Medrpha',
-                      style: TextStyle(
-                        color: Colors.lightBlue,
-                        fontSize: 40,
-                      ),
-                    ),
-                  ),
-                  // ConstantWidget.getTextWidget(
-                  //     S.of(context).signUp,
-                  //     ConstantData.mainTextColor,
-                  //     TextAlign.center,
-                  //     FontWeight.bold,
-                  //     ConstantWidget.getScreenPercentSize(context, 4.2)),
-                  SizedBox(
-                    height: ConstantWidget.getScreenPercentSize(context, 2.5),
-                  ),
-                  ConstantWidget.getDefaultNumberFiledWidget(
-                      context, S.of(context).phone, textMobileController),
-                  FractionallySizedBox(
-                    widthFactor: 0.6,
-                    child: ElevatedButton(
-                      style: ConstantData.btnStylePrimary,
-                      onPressed: _buttonState ? validateMobile : null,
-                      child: const Text('Get OTP'),
-                    ),
-                  ),
-                  // OutlinedButton(
-                  //   onPressed: () {
-                  //     debugPrint('Received click');
-                  //   },
-                  //   child: const Text('Click Me'),
-                  // )
-                ],
+    return Scaffold(
+      backgroundColor: ConstantData.bgColor,
+      body: SafeArea(
+        child: Container(
+          padding:
+              EdgeInsets.all(ConstantWidget.getScreenPercentSize(context, 2.5)),
+          child: ListView(
+            children: [
+              SizedBox(
+                height: ConstantWidget.getScreenPercentSize(context, 10),
               ),
-            ),
+              Center(
+                child: Image.asset(
+                  ConstantData.assetsPath + "logo_transparent.png",
+                  height: height,
+                ),
+              ),
+              SizedBox(
+                height: ConstantWidget.getScreenPercentSize(context, 1.5),
+              ),
+              Center(
+                child: Text(
+                  'Medrpha',
+                  style: TextStyle(
+                    color: Colors.lightBlue,
+                    fontSize: 40,
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: ConstantWidget.getScreenPercentSize(context, 2.5),
+              ),
+              ConstantWidget.getDefaultNumberFiledWidget(
+                  context, S.of(context).phone, textMobileController),
+              FractionallySizedBox(
+                widthFactor: 0.6,
+                child: ElevatedButton(
+                  style: ConstantData.btnStylePrimary,
+                  onPressed: _buttonState ? validateMobile : null,
+                  child: const Text('Get OTP'),
+                ),
+              ),
+            ],
           ),
         ),
-        onWillPop: _requestPop);
+      ),
+    );
   }
 }

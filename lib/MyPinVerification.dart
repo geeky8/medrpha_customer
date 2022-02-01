@@ -58,7 +58,7 @@ class _PhoneVerification extends State<MyPinVerification> {
   logout() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     await prefs.clear();
-    Navigator.push(
+    Navigator.pushReplacement(
         context,
         MaterialPageRoute(
           builder: (context) => MySignUpPage(),
@@ -90,7 +90,7 @@ class _PhoneVerification extends State<MyPinVerification> {
               "Your session is no longer active. \nPlease login using OTP to continue",
           text: "Continue",
           func: () {
-            Navigator.push(
+            Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
                   builder: (context) => MySignUpPage(),
@@ -147,126 +147,123 @@ class _PhoneVerification extends State<MyPinVerification> {
     ConstantData.setThemePosition();
     double height = ConstantWidget.getScreenPercentSize(context, 18);
 
-    return WillPopScope(
-        child: Scaffold(
-          backgroundColor: ConstantData.bgColor,
-          body: SafeArea(
-            child: Container(
-              padding: EdgeInsets.all(
-                  ConstantWidget.getScreenPercentSize(context, 2.5)),
-              child: ListView(
-                children: [
-                  SizedBox(
-                    height: ConstantWidget.getScreenPercentSize(context, 2),
-                  ),
-                  Center(
-                    child: Image.asset(
-                      ConstantData.assetsPath + "logo_transparent.png",
-                      height: height,
-                    ),
-                  ),
-                  SizedBox(
-                    height: ConstantWidget.getScreenPercentSize(context, 2),
-                  ),
-                  ConstantWidget.getTextWidget(
-                      'Enter PIN',
-                      ConstantData.mainTextColor,
-                      TextAlign.center,
-                      FontWeight.bold,
-                      ConstantWidget.getScreenPercentSize(context, 4.2)),
-                  SizedBox(
-                    height: ConstantWidget.getScreenPercentSize(context, 5),
-                  ),
-                  Center(
-                    child: Container(
-                      width: SizeConfig.safeBlockHorizontal * 70,
-                      child: PinInputTextFormField(
-                        key: _formKey,
-                        pinLength: 4,
-                        decoration: new BoxLooseDecoration(
-                          textStyle: TextStyle(
-                              color: ConstantData.mainTextColor,
-                              fontFamily: ConstantData.fontFamily,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18),
-
-                          strokeColorBuilder: PinListenColorBuilder(
-                              ConstantData.textColor,
-                              ConstantData.primaryColor),
-
-                          obscureStyle: ObscureStyle(
-                            isTextObscure: true,
-                            obscureText: '*',
-                          ),
-                          // hintText: _kDefaultHint,
-                        ),
-                        controller: _pinEditingController,
-                        textInputAction: TextInputAction.go,
-                        enabled: _enable,
-                        keyboardType: TextInputType.number,
-                        textCapitalization: TextCapitalization.characters,
-                        onSubmit: (pin) {
-                          print("gtepin===$pin");
-                          if (_formKey.currentState.validate()) {
-                            _formKey.currentState.save();
-                          }
-                        },
-                        onChanged: (pin) {
-                          setState(() {
-                            debugPrint('onChanged execute. pin:$pin');
-                          });
-                        },
-                        onSaved: (pin) {
-                          debugPrint('onSaved pin:$pin');
-                        },
-                        validator: (pin) {
-                          if (pin.isEmpty) {
-                            setState(() {
-                              // _hasError = true;
-                            });
-                            return 'Pin cannot empty.';
-                          }
-                          setState(() {
-                            // _hasError = false;
-                          });
-                          return null;
-                        },
-                        cursor: Cursor(
-                          width: 2,
-                          color: Colors.white,
-                          radius: Radius.circular(1),
-                          enabled: true,
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: SizeConfig.safeBlockVertical * 5,
-                  ),
-                  Container(
-                    margin: EdgeInsets.symmetric(
-                        horizontal: SizeConfig.safeBlockVertical * 9),
-                    child: Column(
-                      children: [
-                        ConstantWidget.getButtonWidget(
-                            context, 'Login', ConstantData.primaryColor, login),
-                        SizedBox(
-                          height: SizeConfig.safeBlockVertical * 1,
-                        ),
-                        OutlinedButton(
-                          onPressed: () {
-                            logout();
-                          },
-                          child: const Text('Login using OTP'),
-                        )
-                      ],
-                    ),
-                  )
-                ],
+    return Scaffold(
+      backgroundColor: ConstantData.bgColor,
+      body: SafeArea(
+        child: Container(
+          padding:
+              EdgeInsets.all(ConstantWidget.getScreenPercentSize(context, 2.5)),
+          child: ListView(
+            children: [
+              SizedBox(
+                height: ConstantWidget.getScreenPercentSize(context, 2),
               ),
-            ),
+              Center(
+                child: Image.asset(
+                  ConstantData.assetsPath + "logo_transparent.png",
+                  height: height,
+                ),
+              ),
+              SizedBox(
+                height: ConstantWidget.getScreenPercentSize(context, 2),
+              ),
+              ConstantWidget.getTextWidget(
+                  'Enter PIN',
+                  ConstantData.mainTextColor,
+                  TextAlign.center,
+                  FontWeight.bold,
+                  ConstantWidget.getScreenPercentSize(context, 4.2)),
+              SizedBox(
+                height: ConstantWidget.getScreenPercentSize(context, 5),
+              ),
+              Center(
+                child: Container(
+                  width: SizeConfig.safeBlockHorizontal * 70,
+                  child: PinInputTextFormField(
+                    key: _formKey,
+                    pinLength: 4,
+                    decoration: new BoxLooseDecoration(
+                      textStyle: TextStyle(
+                          color: ConstantData.mainTextColor,
+                          fontFamily: ConstantData.fontFamily,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18),
+
+                      strokeColorBuilder: PinListenColorBuilder(
+                          ConstantData.textColor, ConstantData.primaryColor),
+
+                      obscureStyle: ObscureStyle(
+                        isTextObscure: true,
+                        obscureText: '*',
+                      ),
+                      // hintText: _kDefaultHint,
+                    ),
+                    controller: _pinEditingController,
+                    textInputAction: TextInputAction.go,
+                    enabled: _enable,
+                    keyboardType: TextInputType.number,
+                    textCapitalization: TextCapitalization.characters,
+                    onSubmit: (pin) {
+                      print("gtepin===$pin");
+                      if (_formKey.currentState.validate()) {
+                        _formKey.currentState.save();
+                      }
+                    },
+                    onChanged: (pin) {
+                      setState(() {
+                        debugPrint('onChanged execute. pin:$pin');
+                      });
+                    },
+                    onSaved: (pin) {
+                      debugPrint('onSaved pin:$pin');
+                    },
+                    validator: (pin) {
+                      if (pin.isEmpty) {
+                        setState(() {
+                          // _hasError = true;
+                        });
+                        return 'Pin cannot empty.';
+                      }
+                      setState(() {
+                        // _hasError = false;
+                      });
+                      return null;
+                    },
+                    cursor: Cursor(
+                      width: 2,
+                      color: Colors.white,
+                      radius: Radius.circular(1),
+                      enabled: true,
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: SizeConfig.safeBlockVertical * 5,
+              ),
+              Container(
+                margin: EdgeInsets.symmetric(
+                    horizontal: SizeConfig.safeBlockVertical * 9),
+                child: Column(
+                  children: [
+                    ConstantWidget.getButtonWidget(
+                        context, 'Login', ConstantData.primaryColor, login),
+                    SizedBox(
+                      height: SizeConfig.safeBlockVertical * 1,
+                    ),
+                    OutlinedButton(
+                      onPressed: () {
+                        logout();
+                      },
+                      child: const Text('Login using OTP'),
+                    )
+                  ],
+                ),
+              )
+            ],
           ),
         ),
-        onWillPop: _requestPop);
+      ),
+    );
   }
 }

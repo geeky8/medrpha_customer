@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_medical_ui/util/ConstantData.dart';
 
 class NoItemFound extends StatelessWidget {
-  const NoItemFound({
-    Key key,
-  }) : super(key: key);
+  const NoItemFound({Key key, this.msg}) : super(key: key);
 
+  final String msg;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -18,7 +17,7 @@ class NoItemFound extends StatelessWidget {
         ),
         SizedBox(height: 30),
         Text(
-          'Nothing to display',
+          msg == null ? 'Nothing to display' : msg,
           style: TextStyle(
             color: Colors.red,
             fontSize: 16,
