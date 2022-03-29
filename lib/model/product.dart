@@ -16,7 +16,8 @@ String productToJson(List<Product> data) =>
     json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
 class Product {
-  static const base_url = "https://partner.medrpha.com/product_image/";
+  // TODO: change product image path
+  static const base_url = "https://partnertest.medrpha.com/product_image/";
   Product({
     this.pid,
     this.wpid,
@@ -70,17 +71,6 @@ class Product {
     } else {
       incrt = RxBool(true);
     }
-    // if (json["subtotal"] == null || json["subtotal"] == '') {
-    //   if (qty.value == 0) {
-    //     s_total = RxDouble(0.00);
-    //   } else {
-    //     double productPrice = double.tryParse(json["newmrp"]) == null
-    //         ? 0.00
-    //         : double.parse(json["newmrp"]);
-    //     print('Product price: ${productPrice}');
-    //     s_total = RxString((qty.value * productPrice).toString());
-    //   }
-    // }
     print('Product sub total : ${s_total}');
     return Product(
       pid: json["pid"],
@@ -91,12 +81,18 @@ class Product {
       productName: json["product_name"],
       categorystr: json["categorystr"],
       compnaystr: json["compnaystr"],
-      newmrp: double.parse(json["newmrp"]),
-      oldmrp: double.parse(json["oldmrp"]),
+      newmrp: double.tryParse(json["newmrp"]) == null
+          ? 0.0
+          : double.parse(json["newmrp"]),
+      oldmrp: double.tryParse(json["oldmrp"]) == null
+          ? 0.0
+          : double.parse(json["oldmrp"]),
       percent: json["percent"],
       saleqtytypestr: json["saleqtytypestr"],
       prodsaletypedetails: json["prodsaletypedetails"],
-      quantity: int.parse(json["quantity"]),
+      quantity: int.tryParse(json["quantity"]) == null
+          ? 0
+          : int.parse(json["quantity"]),
       cartquantity: qty,
       inCart: incrt,
       subtotal: s_total,

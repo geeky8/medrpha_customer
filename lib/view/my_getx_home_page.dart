@@ -16,6 +16,7 @@ import 'package:flutter_medical_ui/myWidget/product_widget.dart';
 import 'package:flutter_medical_ui/util/ConstantData.dart';
 import 'package:flutter_medical_ui/util/PrefData.dart';
 import 'package:flutter_medical_ui/view/my_profile_page.dart';
+import 'package:flutter_medical_ui/view/my_search_page.dart';
 import 'package:get/get.dart';
 
 import '../MyPinVerification.dart';
@@ -27,6 +28,8 @@ class MyNewHomePage extends StatelessWidget {
 
   static ProductController productController = Get.put(ProductController());
   static CategoryController categoryController = Get.put(CategoryController());
+  static CustomerController custController = Get.put(CustomerController());
+
   var _selectedPage = 0.obs;
   double width = 0;
   static List<Widget> pages = [
@@ -42,6 +45,7 @@ class MyNewHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String searchVal = '';
     LocalSessionController ls = Get.find<LocalSessionController>();
     CustomerController cs = Get.find<CustomerController>();
     String _session = ls.getSessionValue();
@@ -59,14 +63,16 @@ class MyNewHomePage extends StatelessWidget {
             children: <Widget>[
               DrawerHeader(
                 decoration: BoxDecoration(
-                  color: Colors.blue,
+                  color: Colors.white70,
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Image.asset(
-                      ConstantData.assetsPath + "logo_transparent.png",
-                      height: 80,
+                    Center(
+                      child: Image.asset(
+                        ConstantData.assetsPath + "logo_transparent2.png",
+                        height: 90,
+                      ),
                     ),
                     SizedBox(height: 10),
                     Obx(
@@ -97,7 +103,7 @@ class MyNewHomePage extends StatelessWidget {
                 onTap: () {
                   print('Order History clicked');
                   Navigator.pop(context);
-                  Navigator.push(
+                  Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
                       // builder: (context) => OrderDetailPage(),
@@ -123,25 +129,58 @@ class MyNewHomePage extends StatelessWidget {
           ),
         ),
         appBar: AppBar(
-          leading: Padding(
-            padding: const EdgeInsets.fromLTRB(4, 3, 0, 3),
-            child: Image.asset(
-              ConstantData.assetsPath + "logo_transparent.png",
-            ),
-          ),
+          iconTheme: IconThemeData(color: Colors.blueGrey),
+          backgroundColor: Colors.white70,
+          // leading: Padding(
+          //   padding: const EdgeInsets.fromLTRB(4, 3, 0, 3),
+          //   child: Image.asset(
+          //     ConstantData.assetsPath + "logo_bar.png",
+          //   ),
+          // ),
           title: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Medrpha'),
-              SizedBox(
-                height: 3,
+              Row(
+                mainAxisSize: MainAxisSize.max,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.fromLTRB(1, 1, 0, 1),
+                        child: Image.asset(
+                          ConstantData.assetsPath + "logo_bar.png",
+                          height: 45,
+                        ),
+                      )
+                      // Text('Medrpha'),
+                      // SizedBox(
+                      //   height: 3,
+                      // ),
+                      // Text(
+                      //   'HEALTHCARE PRODUCTS',
+                      //   style: TextStyle(
+                      //     fontSize: 7,
+                      //   ),
+                      // )
+                    ],
+                  ),
+                  Visibility(
+                    visible: false,
+                    child: GestureDetector(
+                      child: Icon(Icons.search),
+                      onTap: () {
+                        Navigator.push(
+                          NavigationService.navigatorKey.currentContext,
+                          MaterialPageRoute(
+                            builder: (context) => MySearchPage(),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ],
               ),
-              Text(
-                'HEALTHCARE PRODUCTS',
-                style: TextStyle(
-                  fontSize: 7,
-                ),
-              )
             ],
           ),
         ),
@@ -267,6 +306,8 @@ class MyNewHomePage extends StatelessWidget {
   }
 
   static Column buildProductPage() {
+    GlobalKey<FormState> _formKeySearch = GlobalKey<FormState>();
+
     LocalSessionController ls = Get.find<LocalSessionController>();
     String _session = ls.getSessionValue();
     print('Session val from prod Build ${_session}');
@@ -277,9 +318,61 @@ class MyNewHomePage extends StatelessWidget {
         'Total count of product in cart array is : ${Get.find<CartController>().myCart.value.length} ');
     // var _adminApprove = ls.mySession.adminApproved.obs;
     // var _regCompleted = ls.mySession.regCompleted.obs;
+    print(
+        'The value to regcomplte from buildProductPage is ${productController.regCompleted.value}');
+
     return Column(
       children: [
         //Container to display the category list
+        Card(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ListTile(
+                title: Form(
+                  key: _formKeySearch,
+                  child: Obx(
+                    () => TextFormField(
+                        initialValue: productController.searchString.value,
+                        decoration: const InputDecoration(
+                          suffixIcon: Icon(
+                            Icons.search,
+                          ),
+                          isDense: true,
+                          hintText: 'Search name/brand etc',
+                          border: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          errorBorder: InputBorder.none,
+                          disabledBorder: InputBorder.none,
+                          contentPadding: EdgeInsets.only(
+                              left: 5, bottom: 11, top: 15, right: 5),
+                        ),
+                        onEditingComplete: () {
+                          print('search file');
+                        },
+                        onSaved: (e) {
+                          print('saved');
+                        },
+                        onChanged: (e) {
+                          //Setting the productController searchString
+                          // searchVal = e;
+                          print('The changed value : ${e}');
+                          productController.searchString.value = e;
+                        },
+                        validator: (String value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter Search text';
+                          }
+                          return null;
+                        }),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
         Container(
           height: 80,
           child: Row(
@@ -362,113 +455,101 @@ class MyNewHomePage extends StatelessWidget {
             return loading();
         }),
         Obx(() {
-          if (productController.loaded.value) {
-            Widget displayWidget;
-            if (productController.regCompleted.value != true) {
-              displayWidget = Visibility(
-                visible: !productController.regCompleted.value,
-                child: Container(
-                  padding: EdgeInsets.all(8),
-                  color: Colors.amber,
-                  child: Row(
-                    children: [
-                      Column(
-                        children: [
-                          Text(
-                            'Complete Your Profile!!',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          Text(
-                            'You need to complete you profile first to be able to see product price ',
-                            style: TextStyle(fontSize: 10),
-                          ),
-                        ],
-                      ),
-                      GestureDetector(
-                        onTap: () {
-                          userProfile(
-                              NavigationService.navigatorKey.currentContext,
-                              newUser: true);
-                        },
-                        child: Icon(
-                          Icons.label_important,
-                          color: Colors.green,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            } else {
-              displayWidget = Visibility(
-                visible: !productController.adminApproved.value,
-                child: Container(
-                  padding: EdgeInsets.all(8),
-                  color: Colors.amber,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Column(
-                        children: [
-                          Text(
-                            'Your Profile is awaiting Admin Approval!! ',
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          Text(
-                            'Once your profile is approved you will able to see the price and shop',
-                            style: TextStyle(fontSize: 10),
-                          ),
-                        ],
-                      ),
-                      GestureDetector(
-                          onTap: () async {
-                            await Get.find<ProductController>()
-                                .getApprovedStatus();
-                            print('fn completed');
-                          },
-                          child: Icon(Icons.autorenew_rounded)),
-                    ],
-                  ),
-                ),
-              );
-            }
-            return displayWidget;
-          } else {
-            return CircularProgressIndicator();
-          }
-        }),
-        Visibility(
-          visible: false,
-          child: Column(
-            children: [
-              Obx(() =>
-                  Text('Total Count ${categoryController.categoryCount}')),
-              Row(
+          return Visibility(
+            visible: !Get.find<ProductController>().regCompleted.value,
+            child: Container(
+              padding: EdgeInsets.all(8),
+              color: Colors.amber,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  OutlinedButton(
-                    onPressed: categoryController.getCatCount,
-                    child: const Text('Cat Cnt'),
+                  GestureDetector(
+                    onTap: () async {
+                      await Get.find<ProductController>().getApprovedStatus();
+                      print('fn completed');
+                    },
+                    child: Column(
+                      children: [
+                        Text(
+                          'Complete Your Profile!!',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        SizedBox(
+                          height: 5,
+                        ),
+                        Text(
+                          'You need to complete you profile to see product details',
+                          style: TextStyle(fontSize: 10),
+                        ),
+                      ],
+                    ),
                   ),
-                  OutlinedButton(
-                    onPressed: productController.testToggleVisibility,
-                    child: const Text('Toggle visibility'),
+                  GestureDetector(
+                    onTap: () {
+                      userProfile(NavigationService.navigatorKey.currentContext,
+                          newUser: true);
+                    },
+                    child: Icon(
+                      Icons.label_important,
+                      color: Colors.green,
+                    ),
                   ),
                 ],
               ),
-              SizedBox(
-                height: 10,
+            ),
+          );
+        }),
+        Obx(() {
+          return Visibility(
+            visible: !Get.find<ProductController>().adminApproved.value &&
+                Get.find<ProductController>().regCompleted.value,
+            child: Container(
+              padding: EdgeInsets.all(8),
+              color: Colors.amber,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  Column(
+                    children: [
+                      Text(
+                        'Your Profile is awaiting Admin Approval!! ',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      SizedBox(
+                        height: 5,
+                      ),
+                      Text(
+                        'Once your profile is approved you will able to see the price and shop',
+                        style: TextStyle(fontSize: 10),
+                      ),
+                    ],
+                  ),
+                  GestureDetector(
+                      onTap: () async {
+                        await Get.find<ProductController>().getApprovedStatus();
+                        print('fn completed');
+                      },
+                      child: Icon(Icons.autorenew_rounded)),
+                ],
               ),
-            ],
-          ),
-        )
+            ),
+          );
+        }),
       ],
     );
+  }
+
+  static Widget getProfileComplete() {
+    Obx(() {
+      if (Get.find<ProductController>().regCompleted.value == true) {
+        return SizedBox(
+          height: 1,
+        );
+      } else {
+        return Obx(() =>
+            Text('hi ${!Get.find<ProductController>().regCompleted.value}'));
+      }
+    });
   }
 
   static getUpdatedProductList(int catid) {

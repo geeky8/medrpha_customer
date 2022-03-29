@@ -5,7 +5,9 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_medical_ui/apicalls/api_service.dart';
 import 'package:flutter_medical_ui/controller/cart_controller.dart';
 import 'package:flutter_medical_ui/controller/product_controller.dart';
+import 'package:flutter_medical_ui/model/navigation_service.dart';
 import 'package:flutter_medical_ui/model/product.dart';
+import 'package:flutter_medical_ui/my_product_details.dart';
 import 'package:flutter_medical_ui/util/ConstantData.dart';
 import 'package:flutter_medical_ui/util/ConstantWidget.dart';
 import 'package:get/get.dart';
@@ -96,7 +98,14 @@ class ProductWidget extends StatelessWidget {
             children: [
               Container(
                 width: 70,
-                child: Image.network(Product.base_url + product.productImg),
+                child: GestureDetector(
+                    onTap: () {
+                      print('The product id is: ${product.pid}');
+                      showProductDetails(
+                          product_id: product.pid, price_id: product.priceId);
+                    },
+                    child:
+                        Image.network(Product.base_url + product.productImg)),
               ),
               Expanded(
                 child: Padding(
@@ -106,12 +115,20 @@ class ProductWidget extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        product.productName,
-                        style: TextStyle(
-                          color: Colors.black87,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
+                      GestureDetector(
+                        onTap: () {
+                          print('The product id is: ${product.pid}');
+                          showProductDetails(
+                              product_id: product.pid,
+                              price_id: product.priceId);
+                        },
+                        child: Text(
+                          product.productName,
+                          style: TextStyle(
+                            color: Colors.black87,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                       Text(
@@ -471,6 +488,18 @@ class ProductWidget extends StatelessWidget {
         print('Item out of stocl');
       }
     }
+  }
+
+  static showProductDetails({product_id = 1, price_id}) {
+    print('User profile clicked');
+
+    Navigator.push(
+      NavigationService.navigatorKey.currentContext,
+      MaterialPageRoute(
+        builder: (context) =>
+            MyProductDetails(p_id: product_id, price_id: price_id),
+      ),
+    );
   }
 
   plusItem() async {

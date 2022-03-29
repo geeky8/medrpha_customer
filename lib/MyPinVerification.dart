@@ -13,11 +13,11 @@ import 'package:flutter_medical_ui/util/SizeConfig.dart';
 import 'package:flutter_medical_ui/view/my_getx_home_page.dart';
 import 'package:get/get.dart';
 import 'package:pin_input_text_field/pin_input_text_field.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'MySignUpPage.dart';
 import 'controller/product_controller.dart';
 import 'myWidget/my_common_widget.dart';
+import 'myutil/common_function.dart';
 
 class MyPinVerification extends StatefulWidget {
   @override
@@ -53,16 +53,6 @@ class _PhoneVerification extends State<MyPinVerification> {
   setTheme() async {
     themeMode = await PrefData.getThemeMode();
     setState(() {});
-  }
-
-  logout() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.clear();
-    Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => MySignUpPage(),
-        ));
   }
 
   Future<CustomDialogBox> login() async {
@@ -212,6 +202,9 @@ class _PhoneVerification extends State<MyPinVerification> {
                     onChanged: (pin) {
                       setState(() {
                         debugPrint('onChanged execute. pin:$pin');
+                        if (pin.length == 4) {
+                          login();
+                        }
                       });
                     },
                     onSaved: (pin) {
@@ -247,13 +240,13 @@ class _PhoneVerification extends State<MyPinVerification> {
                 child: Column(
                   children: [
                     ConstantWidget.getButtonWidget(
-                        context, 'Login', ConstantData.primaryColor, login),
+                        context, 'Login', Colors.cyan, login),
                     SizedBox(
                       height: SizeConfig.safeBlockVertical * 1,
                     ),
                     OutlinedButton(
                       onPressed: () {
-                        logout();
+                        CommonFunctions().logout();
                       },
                       child: const Text('Login using OTP'),
                     )

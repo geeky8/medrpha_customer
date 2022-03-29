@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_medical_ui/myWidget/product_view.dart';
+import 'package:flutter_medical_ui/myWidget/product_view_not_in_use.dart';
 
 class TestProduct extends StatefulWidget {
   @override

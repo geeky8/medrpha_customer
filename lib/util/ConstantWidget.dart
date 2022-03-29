@@ -762,7 +762,7 @@ class ConstantWidget {
                 TextAlign.center,
                 FontWeight.w500,
                 fontSize,
-                (color == ConstantData.primaryColor)
+                (color == ConstantData.primaryColor || color == Colors.cyan)
                     ? Colors.white
                     : ConstantData.mainTextColor)),
       ),

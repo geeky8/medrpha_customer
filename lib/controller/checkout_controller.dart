@@ -1,6 +1,8 @@
 import 'package:flutter_medical_ui/apicalls/api_service.dart';
 import 'package:flutter_medical_ui/controller/local_session_controller.dart';
+import 'package:flutter_medical_ui/controller/product_controller.dart';
 import 'package:flutter_medical_ui/model/product.dart';
+import 'package:flutter_medical_ui/myutil/common_function.dart';
 import 'package:get/get.dart';
 
 import 'cart_controller.dart';
@@ -23,14 +25,17 @@ class CheckoutController extends GetxController {
       print('session present');
       try {
         loaded(false);
+        finalPrice = (finalPrice * 100).round() / 100;
         var itemsResult = await ApiService.checkoutCartItems(
             sessionID: _sessionID,
             paymentMode: checkOutType,
             finalPrice: finalPrice);
         if (itemsResult != null) {
           if (itemsResult["status"] == "1") {
-            orderId.value = itemsResult["order_id"].obs;
+            orderId.value = itemsResult["order_id"];
             clearLocalCart();
+            CommonFunctions().refreshOrders();
+            Get.find<ProductController>().searchString.value = '';
           }
         }
       } finally {
@@ -48,5 +53,8 @@ class CheckoutController extends GetxController {
     print(
         'After clearing the cart  Final price:${cc.finalPrice.value}, Cart Count: ${cc.cartCount.value} ');
     print('& no of elements in cart: ${cc.myCart.length}');
+    cc.fillCart();
+    ProductController pc = Get.find<ProductController>();
+    pc.getProductList();
   }
 }

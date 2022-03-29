@@ -27,6 +27,8 @@ class PinController extends GetxService {
         }
       } finally {
         loaded(true);
+        pinOptions.insert(
+            0, Pin(areaid: 0, areaName: 'Select State', cityid: 0));
         print('Pin loaded now');
       }
     }

@@ -1,10 +1,11 @@
 import 'package:flutter_medical_ui/apicalls/api_service.dart';
 import 'package:get/get.dart';
+import 'package:get/get.dart';
 
 import 'local_session_controller.dart';
 
 class OrderDetailsController extends GetxController {
-  var orderDetails, order_datetime, order_no, order_amount;
+  var orderDetails, order_datetime, order_no, order_amount, payment_status;
   var loaded = false.obs;
   // OrderDetailsController({
   //
@@ -32,11 +33,15 @@ class OrderDetailsController extends GetxController {
         var orderRes = await ApiService.getOrderDetailsData(
             sessionID: _sessionID, orderId: orderId);
         print(orderRes);
+
         if (orderRes["status"] == "1") {
+          String ps = orderRes["payment_status"];
           order_datetime = orderRes["order_datetime"];
           order_no = orderRes["order_no"];
           order_amount = orderRes["order_amount"];
           orderDetails = orderRes["orders"];
+          print("Order status as received " + orderRes["payment_status"]);
+          payment_status = ps.obs;
         } else {
           order_amount = "0";
         }

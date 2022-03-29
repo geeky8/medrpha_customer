@@ -36,7 +36,7 @@ import 'generated/l10n.dart';
 import 'main.dart';
 import 'model/ArticleModel.dart';
 import 'model/product.dart';
-import 'myWidget/product_view.dart';
+import 'myWidget/product_view_not_in_use.dart';
 
 class MyHome extends StatefulWidget {
   @override
@@ -94,7 +94,6 @@ class _TabWidget extends State<MyHome> with SingleTickerProviderStateMixin {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     // = new TabController(length: 5, vsync: this);
 

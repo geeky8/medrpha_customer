@@ -12,6 +12,7 @@ class ProductController extends GetxController {
   var cartCount = RxInt(0);
   var loaded = false.obs;
   var showProduct = false.obs;
+  var searchString = RxString('');
 
   var adminApproved = false.obs;
   var regCompleted = false.obs;
@@ -19,7 +20,13 @@ class ProductController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    debounce(searchString, (_) => searchProduct(), time: Duration(seconds: 1));
     getProductList();
+  }
+
+  searchProduct() {
+    print('Search Product Called');
+    getProductList(term: searchString.value);
   }
 
   addProduct() {
@@ -95,11 +102,13 @@ class ProductController extends GetxController {
             'Trying to set product  admin approved to ${ls.getAdminAprovalStatus()}');
         adminApproved = RxBool(ls.getAdminAprovalStatus());
         regCompleted = RxBool(ls.getProfileCompletionStatus());
+        print(
+            'After product init, the value of regComplete: ${regCompleted.value} admin approval value: ${adminApproved.value}');
         showProduct =
             ls.getProfileCompletionStatus() && ls.getAdminAprovalStatus()
                 ? RxBool(true)
                 : RxBool(false);
-
+        getApprovedStatus();
         loaded.value = true;
       }
     }

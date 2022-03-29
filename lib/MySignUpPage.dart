@@ -5,12 +5,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_medical_ui/MyPhoneVerification.dart';
+import 'package:flutter_medical_ui/controller/userstatus_controller.dart';
 import 'package:flutter_medical_ui/util/ConstantData.dart';
 import 'package:flutter_medical_ui/util/ConstantWidget.dart';
 import 'package:flutter_medical_ui/util/PrefData.dart';
 import 'package:flutter_medical_ui/util/SizeConfig.dart';
+import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 
+import 'controller/local_session_controller.dart';
 import 'generated/l10n.dart';
 import 'myWidget/my_common_widget.dart';
 
@@ -42,7 +45,28 @@ class _SignUpPage extends State<MySignUpPage> {
     super.initState();
     myFocusNode = FocusNode();
     setTheme();
+    invalidateLocalValue();
     // getOtp('9312000496');
+  }
+
+  void invalidateLocalValue() async {
+    var session_id = await PrefData.getSessionID();
+    try {
+      LocalSessionController ls = Get.find<LocalSessionController>();
+      if (ls != null) {
+        if (ls.mySession != null) {
+          print(
+              'In SignUp: ls.mysession is not null with value ${ls.mySession}');
+          ls.mySession.clearData();
+        }
+        print('Local Session is already created');
+      }
+    } finally {
+      print('Session value before clear up : ${session_id}');
+      if (session_id != null) {
+        PrefData.clearLocalData();
+      }
+    }
   }
 
   @override
@@ -65,7 +89,11 @@ class _SignUpPage extends State<MySignUpPage> {
       // }
       print(jsonData['status']);
       print(jsonData['message']);
-      if (jsonData['status'] == "1") {
+      if (jsonData['status'] == "1" || jsonData['status'] == "2") {
+        bool userType = jsonData['status'] == "1" ? true : false;
+        print("The user bool value ${userType}");
+        Get.put<UserStatusController>(UserStatusController(userType));
+        //status 1 is existing user status 2 is new user
         setState(() {
           _buttonState = true;
         });
@@ -115,9 +143,7 @@ class _SignUpPage extends State<MySignUpPage> {
     SizeConfig().init(context);
     ConstantData.setThemePosition();
     double height = ConstantWidget.getScreenPercentSize(context, 18);
-
     double subHeight = ConstantWidget.getScreenPercentSize(context, 8.5);
-
     double radius = ConstantWidget.getPercentSize(subHeight, 20);
     double fontSize = ConstantWidget.getPercentSize(subHeight, 25);
 
@@ -134,22 +160,22 @@ class _SignUpPage extends State<MySignUpPage> {
               ),
               Center(
                 child: Image.asset(
-                  ConstantData.assetsPath + "logo_transparent.png",
-                  height: height,
+                  ConstantData.assetsPath + "logo_transparent2.png",
+                  height: height + 90,
                 ),
               ),
               SizedBox(
-                height: ConstantWidget.getScreenPercentSize(context, 1.5),
+                height: ConstantWidget.getScreenPercentSize(context, 4.5),
               ),
-              Center(
-                child: Text(
-                  'Medrpha',
-                  style: TextStyle(
-                    color: Colors.lightBlue,
-                    fontSize: 40,
-                  ),
-                ),
-              ),
+              // Center(
+              //   child: Text(
+              //     'Medrpha',
+              //     style: TextStyle(
+              //       color: Colors.lightBlue,
+              //       fontSize: 40,
+              //     ),
+              //   ),
+              // ),
               SizedBox(
                 height: ConstantWidget.getScreenPercentSize(context, 2.5),
               ),
@@ -158,7 +184,7 @@ class _SignUpPage extends State<MySignUpPage> {
               FractionallySizedBox(
                 widthFactor: 0.6,
                 child: ElevatedButton(
-                  style: ConstantData.btnStylePrimary,
+                  style: ConstantData.btnStyleSecondary,
                   onPressed: _buttonState ? validateMobile : null,
                   child: const Text('Get OTP'),
                 ),

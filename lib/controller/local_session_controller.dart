@@ -1,15 +1,17 @@
-import 'package:flutter_medical_ui/controller/cart_controller.dart';
+import 'package:flutter_medical_ui/controller/category_controller.dart';
 import 'package:flutter_medical_ui/controller/pin_controller.dart';
+import 'package:flutter_medical_ui/controller/product_controller.dart';
 import 'package:flutter_medical_ui/controller/state_controller.dart';
 import 'package:flutter_medical_ui/model/local_session.dart';
 import 'package:flutter_medical_ui/util/PrefData.dart';
 import 'package:get/get.dart';
 
+import 'cart_controller.dart';
 import 'city_controller.dart';
 import 'country_controller.dart';
 import 'customer_controller.dart';
 
-class LocalSessionController extends GetxService {
+class LocalSessionController extends GetxController {
   LocalSession mySession;
   int test = 11;
   static String medDefault = 'medrpha_';
@@ -34,17 +36,29 @@ class LocalSessionController extends GetxService {
 
   Future<void> getSessionData() async {
     print('Getting pref data from disk');
-
+    Get.delete<ProductController>();
+    Get.delete<CustomerController>();
+    Get.delete<CartController>();
     mySession = await PrefData.getAllLocalData();
 
-    print(
-        'Starting getx service for country for session id : ${mySession.session}');
-    Get.put<CountryController>(CountryController(), permanent: true);
-    Get.put<StateController>(StateController(), permanent: true);
-    Get.put<CityController>(CityController(), permanent: true);
-    Get.put<PinController>(PinController(), permanent: true);
-    Get.put<CustomerController>(CustomerController());
-    Get.put<CartController>(CartController());
+    try {
+      print(
+          'Starting getx service for country for session id : ${mySession.session}');
+      Get.put<CountryController>(CountryController());
+      Get.put<StateController>(StateController());
+      Get.put<CityController>(CityController());
+      Get.put<PinController>(PinController());
+      Get.put<CustomerController>(CustomerController());
+    } finally {
+      Get.put<CountryController>(CountryController());
+      Get.put<StateController>(StateController());
+      Get.put<CityController>(CityController());
+      Get.put<PinController>(PinController());
+      Get.put<ProductController>(ProductController());
+      Get.put<CustomerController>(CustomerController());
+      Get.put<CartController>(CartController());
+      Get.put(CategoryController());
+    }
   }
 
   String getSessionValue() {

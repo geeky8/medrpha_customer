@@ -27,6 +27,8 @@ class StateController extends GetxService {
         }
       } finally {
         loaded(true);
+        stateOptions.insert(
+            0, States(countid: 0, stateName: 'Select State', stateid: 0));
         print('State loaded now');
       }
     }

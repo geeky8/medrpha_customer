@@ -7,9 +7,16 @@ import 'package:flutter_medical_ui/util/ConstantData.dart';
 import 'package:flutter_medical_ui/util/ConstantWidget.dart';
 import 'package:flutter_medical_ui/util/PrefData.dart';
 import 'package:flutter_medical_ui/util/SizeConfig.dart';
+import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:pin_input_text_field/pin_input_text_field.dart';
+import 'package:sms_autofill/sms_autofill.dart';
+import 'package:timer_button/timer_button.dart';
 
+import 'controller/cart_controller.dart';
+import 'controller/customer_controller.dart';
+import 'controller/local_session_controller.dart';
+import 'controller/product_controller.dart';
 import 'generated/l10n.dart';
 import 'localPinScreen.dart';
 import 'myWidget/my_common_widget.dart';
@@ -51,6 +58,10 @@ class _PhoneVerification extends State<MyPhoneVerification> {
     super.initState();
 
     setTheme();
+    Get.delete<ProductController>();
+    Get.delete<CustomerController>();
+    Get.delete<CartController>();
+    Get.delete<LocalSessionController>();
   }
 
   setTheme() async {
@@ -227,7 +238,10 @@ class _PhoneVerification extends State<MyPhoneVerification> {
                         },
                         onChanged: (pin) {
                           setState(() {
-                            debugPrint('onChanged execute. pin:$pin');
+                            print('The length of pin 2 ${pin.length}');
+                            if (pin.length == 4) {
+                              validateOtp();
+                            }
                           });
                         },
                         onSaved: (pin) {
@@ -268,12 +282,25 @@ class _PhoneVerification extends State<MyPhoneVerification> {
                   SizedBox(
                     height: SizeConfig.safeBlockVertical * 3,
                   ),
+                  // FractionallySizedBox(
+                  //   widthFactor: 0.6,
+                  //   child: ElevatedButton(
+                  //     style: ConstantData.btnStylePrimary,
+                  //     onPressed: _resendBtnStatus ? resendOpt : null,
+                  //     child: const Text('Resend OTP'),
+                  //   ),
+                  // ),
                   FractionallySizedBox(
                     widthFactor: 0.6,
-                    child: ElevatedButton(
-                      style: ConstantData.btnStylePrimary,
+                    child: TimerButton(
+                      label: "Resend OTP",
+                      timeOutInSeconds: 30,
                       onPressed: _resendBtnStatus ? resendOpt : null,
-                      child: const Text('Resend OTP'),
+                      disabledColor: Colors.grey.shade600,
+                      color: Colors.blue.shade400,
+                      buttonType: ButtonType.OutlinedButton,
+                      disabledTextStyle: new TextStyle(fontSize: 16.0),
+                      activeTextStyle: const TextStyle(fontSize: 15.0),
                     ),
                   ),
                 ],

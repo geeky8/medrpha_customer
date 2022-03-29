@@ -27,6 +27,8 @@ class CityController extends GetxService {
         }
       } finally {
         loaded(true);
+        cityOptions.insert(
+            0, City(cityid: 0, cityName: 'Select City', statid: 0));
         print('City loaded now');
       }
     }

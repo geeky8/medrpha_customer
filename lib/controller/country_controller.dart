@@ -27,6 +27,9 @@ class CountryController extends GetxService {
         }
       } finally {
         loaded(true);
+
+        countryOptions.insert(
+            0, Country(countryid: 0, countryName: 'Select Country'));
         print('Country loaded now');
       }
     }

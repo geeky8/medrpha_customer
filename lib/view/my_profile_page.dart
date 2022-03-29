@@ -23,6 +23,7 @@ import 'package:flutter_medical_ui/my_uplod_page.dart';
 import 'package:flutter_medical_ui/util/ConstantData.dart';
 import 'package:flutter_medical_ui/util/ConstantWidget.dart';
 import 'package:flutter_medical_ui/util/SizeConfig.dart';
+import 'package:flutter_medical_ui/view/open_pdf.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -299,6 +300,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
     LocalSessionController ls = Get.find<LocalSessionController>();
     CountryController cn = Get.find<CountryController>();
     StateController st = Get.find<StateController>();
+    CityController ct = Get.find<CityController>();
     CustomerController cs = Get.find<CustomerController>();
     print(cs.customer.value.firmName);
     _sessionID = ls.getSessionValue();
@@ -313,6 +315,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
       child: Scaffold(
         appBar: AppBar(
           title: Text('Back'),
+          backgroundColor: Colors.cyan,
         ),
         body: Obx(() => pages[_selectedPage.value]),
         bottomNavigationBar: SizedBox(
@@ -384,6 +387,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
 
   Container gstPage() {
     CustomerController cs = Get.find<CustomerController>();
+
     _showGST(cs.gstUpdated);
     return Container(
       child: Column(
@@ -1421,10 +1425,25 @@ class _MyProfilePageState extends State<MyProfilePage> {
     StateController st = Get.find<StateController>();
     CityController ct = Get.find<CityController>();
     PinController pn = Get.find<PinController>();
-    _selectedCountry.value =
-        getCountryName(cn.countryOptions, _country_id.toString());
-    _selectedCountryId = _country_id.obs;
-    if (_country_id != null) {
+    // if (_country_id == null || _country_id == '') {
+    if (_country_id.length == 0) {
+      _selectedCountry.value = 'Select Country';
+      _selectedCountryId = '0';
+      _selectedStateId = '0';
+      _selectedState = 'Select State';
+      _selectedCityId = '0';
+      _selectedCity = 'Select City';
+      _selectedPinId = '0';
+      _selectedPin = 'Select Pin';
+    } else {
+      _selectedCountry.value =
+          getCountryName(cn.countryOptions, _country_id.toString());
+    }
+    print('The value of countryid is ${_country_id.toString()}');
+    print('The lencgh of country Id is : ${_country_id.length}');
+    if (_country_id != null && _country_id.length > 0) {
+      print('_country _id is not null');
+      _selectedCountryId = _country_id.obs;
       onCountryChange(_selectedCountry.value, firstTime: true);
       _selectedState = getStateName(st.stateOptions, _state_id.toString()).obs;
       _selectedStateId = _state_id.obs;
@@ -1445,6 +1464,13 @@ class _MyProfilePageState extends State<MyProfilePage> {
       } else {
         print('state id is null');
       }
+    } else {
+      print('country id is blank');
+      onCountryChange('Select Country', firstTime: true);
+      onStateChange('Select State', firstTime: true);
+      onCityChanged('Select City', firstTime: true);
+      // onPinChanged('Select Pin', firstTime: true);
+      // _selectedCountryId.value = 0;
     }
 
     firmNameController.text = firmName;

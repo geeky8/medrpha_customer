@@ -9,6 +9,7 @@ import 'package:flutter_medical_ui/model/order_details.dart';
 import 'package:flutter_medical_ui/model/order_history.dart';
 import 'package:flutter_medical_ui/model/pin.dart';
 import 'package:flutter_medical_ui/model/product.dart';
+import 'package:flutter_medical_ui/model/product_details.dart';
 import 'package:flutter_medical_ui/model/shipping_address.dart';
 import 'package:flutter_medical_ui/model/state.dart';
 import 'package:http/http.dart' as http;
@@ -637,6 +638,31 @@ class ApiService {
     }
   }
 
+  static Future<ProductDetails> getProductDetails(
+      {String sessionID, String p_id, String price_id}) async {
+    ProductDetails tempProduct;
+    var url = Uri.parse('https://api.medrpha.com/api/product/productdetails');
+    Map jsonBody = {"sessid": sessionID, "pid": p_id, "price_id": price_id};
+    print(jsonBody);
+    var response = await client.post(url, body: jsonBody);
+    print(jsonBody);
+    if (response.statusCode == 200) {
+      var jsonObj = response.body;
+      var jsonData = json.decode(jsonObj.toString());
+      if (jsonData['status'] == "0" || jsonData['status'] == null) {
+        return tempProduct;
+      } else {
+        var dataArray = jsonData['data'];
+        print(dataArray);
+        return dataArray == null
+            ? tempProduct
+            : productDetailsFromJson(json.encode(dataArray));
+      }
+    } else {
+      return tempProduct;
+    }
+  }
+
   static Future<ShippingAddress> getShippingAddressData(
       {String sessionID}) async {
     ShippingAddress tempCustomer;
@@ -664,18 +690,29 @@ class ApiService {
   }
 
   static Future<List<OrderHistory>> getOrderHistoryData(
-      {String sessionID}) async {
+      {String sessionID, String startDate, String endDate}) async {
     List<OrderHistory> tempOrderHistory = [];
     var url = Uri.parse('https://api.medrpha.com/api/order/orderlist');
-    Map jsonBody = {
-      "sessid": sessionID,
-    };
+    Map jsonBody;
+    if (startDate != null && endDate != null) {
+      jsonBody = {
+        "sessid": sessionID,
+        "FromDate": startDate,
+        "ToDate": endDate
+      };
+    } else {
+      jsonBody = {
+        "sessid": sessionID,
+      };
+    }
+    print("Data sent");
+    print(jsonBody);
     var response = await client.post(url, body: jsonBody);
 
     if (response.statusCode == 200) {
       var jsonObj = response.body;
       var jsonData = json.decode(jsonObj.toString());
-      // print(jsonData);
+      print(jsonData);
       if (jsonData['status'] == "0" || jsonData['status'] == null) {
         return tempOrderHistory;
       } else {
@@ -686,6 +723,27 @@ class ApiService {
       }
     } else {
       return tempOrderHistory;
+    }
+  }
+
+  static Future<void> updatePaymentStatus(
+      {String sessionID, String orderId}) async {
+    var url = Uri.parse('https://api.medrpha.com/api/order/payconfirmed');
+    Map jsonBody = {
+      "sessid": sessionID,
+      "order_id": orderId,
+    };
+    print("Data sent");
+    print(jsonBody);
+    var response = await client.post(url, body: jsonBody);
+
+    if (response.statusCode == 200) {
+      var jsonObj = response.body;
+      var jsonData = json.decode(jsonObj.toString());
+      print(jsonData);
+      if (jsonData['status'] == "0" || jsonData['status'] == null) {
+        return;
+      }
     }
   }
 
@@ -713,6 +771,7 @@ class ApiService {
             "order_datetime": jsonData['order_datetime'],
             "order_no": jsonData['order_no'],
             "order_amount": jsonData['order_amount'],
+            "payment_status": jsonData['payment_status'],
             "orders": tempOrderDetails,
           };
         }

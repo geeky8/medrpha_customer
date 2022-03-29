@@ -28,6 +28,11 @@ class PrefData {
     return ls;
   }
 
+  static clearLocalData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+  }
+
   static getSessionID() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.getString(sessionID);

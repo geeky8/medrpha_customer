@@ -58,22 +58,25 @@ class _PhoneVerification extends State<LocalPinScreen> {
     setState(() {});
   }
 
-  void setValue(mobile, session, adminstatus, complete_reg_status, pin) async {
+  Future<void> setValue(
+      mobile, session, adminstatus, complete_reg_status, pin) async {
     await PrefData.setMobileNo(mobile);
     await PrefData.setSessionID(session);
     await PrefData.setAdminApproved(adminstatus);
     await PrefData.setRegCompleted(complete_reg_status);
     await PrefData.setPin(pin);
     try {
-      LocalSessionController ls = Get.find<LocalSessionController>();
-      ls.mySession.mobileNo = mobile;
-      ls.mySession.session = session;
-      ls.mySession.pin = pin;
-      ls.mySession.regCompleted.value = complete_reg_status;
-      ls.mySession.adminApproved.value = adminstatus;
-    } catch (e) {
-      Get.put<LocalSessionController>(LocalSessionController(),
-          permanent: true);
+      // LocalSessionController ls = Get.find<LocalSessionController>();
+      // ls.mySession.mobileNo = mobile;
+      // ls.mySession.session = session;
+      // ls.mySession.pin = pin;
+      // ls.mySession.regCompleted.value = complete_reg_status;
+      // ls.mySession.adminApproved.value = adminstatus;
+      // } catch (e) {
+      //   Get.put<LocalSessionController>(LocalSessionController());
+      // }
+    } finally {
+      Get.put<LocalSessionController>(LocalSessionController());
     }
 
     // Navigator.pushReplacement(
@@ -104,7 +107,7 @@ class _PhoneVerification extends State<LocalPinScreen> {
       _repinEditingController.clear();
     } else {
       //save value in mobile
-      setValue(widget.mobile, widget.session, widget.adminstatus,
+      await setValue(widget.mobile, widget.session, widget.adminstatus,
           widget.complete_reg_status, pin);
     }
     setState(() {

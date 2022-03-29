@@ -1,82 +1,189 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_medical_ui/view/open_pdf.dart';
 import 'package:get/get.dart';
+import 'package:flutter_medical_ui/apicalls/api_service.dart';
 
+import 'controller/customer_controller.dart';
+import 'controller/local_session_controller.dart';
 import 'controller/order_details_controller.dart';
+import 'controller/order_history_controller.dart';
 import 'model/order_details.dart';
 import 'myWidget/no_item_found.dart';
+import 'package:razorpay_flutter/razorpay_flutter.dart';
+
+import 'my_order_history.dart';
 
 class MyOrderDetails extends StatelessWidget {
   String orderId;
+  static const platform = const MethodChannel("razorpay_flutter");
+  Razorpay _razorpay = Razorpay();
   MyOrderDetails({this.orderId}) {
     print('in constructor');
+    _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
+    _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
+    _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
+  }
+
+  var options = {};
+  OrderDetailsController orderDetailsController;
+
+  //Call this function for payment
+  void openCheckout() async {
+    CustomerController cs = Get.find<CustomerController>();
+    // 'key' : 'rzp_test_DgTJRx7VR36Tvl',
+    // 'key': 'rzp_live_kfbonxeuRfZYaL',
+    var options = {
+      'key': 'rzp_test_DgTJRx7VR36Tvl',
+      'amount':
+          (double.parse(orderDetailsController.order_amount) * 100).round(),
+      'name': 'Mederpha',
+      'description': 'Online Medical Hub',
+      'retry': {'enabled': true, 'max_count': 1},
+      'send_sms_hash': true,
+      'prefill': {
+        'contact': cs.customer.value.phoneno,
+        'email': cs.customer.value.txtemail,
+      },
+      'external': {
+        'wallets': ['paytm']
+      }
+    };
+
+    print(options);
+
+    try {
+      _razorpay.open(options);
+    } catch (e) {
+      debugPrint('Error: e');
+    }
+  }
+
+  void _handlePaymentSuccess(PaymentSuccessResponse response) {
+    // Do something when payment succeeds
+    // also update the OrderHistoryController patment status to 2
+    print("SUCCESS: " + response.paymentId);
+    LocalSessionController ls = Get.find<LocalSessionController>();
+    String _sessionID = ls.getSessionValue();
+    OrderHistoryController oListcontroller = Get.find<OrderHistoryController>();
+    oListcontroller.updatePaymentStatus(
+        orderNo: orderDetailsController.order_no);
+    orderDetailsController.payment_status.value = "2";
+    ApiService.updatePaymentStatus(
+        sessionID: _sessionID, orderId: orderDetailsController.order_no);
+  }
+
+  void _handlePaymentError(PaymentFailureResponse response) {
+    // Do something when payment fails
+    print("ERROR in payment: " +
+        response.code.toString() +
+        " - " +
+        response.message);
+  }
+
+  void _handleExternalWallet(ExternalWalletResponse response) {
+    // Do something when an external wallet was selected
+    print("EXTERNAL_WALLET: " + response.walletName);
   }
 
   @override
   Widget build(BuildContext context) {
-    const base_url = "https://partner.medrpha.com/product_image/";
+    Razorpay _razorpay;
+
+    ///TODO:  Change the image url
+    const base_url = "https://partnertest.medrpha.com/product_image/";
     // print('creatinging order details controller for order ID ${orderId}');
-    final OrderDetailsController ohC = OrderDetailsController();
-    ohC.loadOrderDetailsData(orderId);
+    orderDetailsController = OrderDetailsController();
+    orderDetailsController.loadOrderDetailsData(orderId);
     return SafeArea(
       child: Scaffold(
-          appBar: AppBar(
-            title: Text('Your Order Details'),
-          ),
+          // appBar: AppBar(
+          //   title: Text('Your Order Details'),
+          // ),
           body: Obx(
-            () => ohC.loaded.value
-                ? ohC.order_amount == "0"
-                    ? NoItemFound()
-                    : Column(
-                        children: [
-                          Card(
-                            color: Colors.white,
-                            elevation: 0,
-                            margin: EdgeInsets.fromLTRB(20, 15, 7, 15),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+        () => orderDetailsController.loaded.value
+            ? orderDetailsController.order_amount == "0"
+                ? NoItemFound()
+                : Column(
+                    children: [
+                      ListTile(
+                        tileColor: Color.fromRGBO(0, 143, 181, 1.0),
+                        leading: Icon(
+                          Icons.arrow_back,
+                          color: Colors.white,
+                        ),
+                        title: Text(
+                          'Back to Order History',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18.0),
+                        ),
+                        onTap: () {
+                          print('Order History clicked');
+                          Navigator.pop(context);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              // builder: (context) => OrderDetailPage(),
+                              builder: (context) => MyOrderHistory(),
+                            ),
+                          );
+                        },
+                        // onTap: () => Navigator.pop(context),
+                      ),
+                      Card(
+                        color: Colors.white,
+                        elevation: 0,
+                        margin: EdgeInsets.fromLTRB(20, 15, 7, 15),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Your Order', style: TextStyle(fontSize: 25)),
+                            SizedBox(height: 10),
+                            Row(
                               children: [
-                                Text('Order Summary',
-                                    style: TextStyle(fontSize: 25)),
-                                SizedBox(height: 10),
-                                Row(
-                                  children: [
-                                    Text('Order Date   :     ',
-                                        style: TextStyle(fontSize: 16)),
-                                    Text(ohC.order_datetime,
-                                        style: TextStyle(fontSize: 16)),
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    Text('Order#          :     ',
-                                        style: TextStyle(fontSize: 16)),
-                                    Text(ohC.order_no,
-                                        style: TextStyle(fontSize: 16)),
-                                  ],
-                                ),
-                                Row(
-                                  children: [
-                                    Text('Order total   :     ',
-                                        style: TextStyle(fontSize: 16)),
-                                    Text('\u{20B9}${ohC.order_amount}',
-                                        style: TextStyle(fontSize: 16)),
-                                  ],
-                                ),
+                                Text('Order Date   :     ',
+                                    style: TextStyle(fontSize: 16)),
+                                Text(orderDetailsController.order_datetime,
+                                    style: TextStyle(fontSize: 16)),
                               ],
                             ),
-                          ),
-                          Expanded(
-                            child: ListView.builder(
-                                itemCount: ohC.orderDetails.length,
-                                itemBuilder: (BuildContext context, int index) {
-                                  OrderDetails product =
-                                      ohC.orderDetails[index];
-                                  return Card(
-                                    child: Padding(
-                                      padding:
-                                          EdgeInsets.only(left: 15, top: 10),
-                                      child: Row(
+                            Row(
+                              children: [
+                                Text('Order#          :     ',
+                                    style: TextStyle(fontSize: 16)),
+                                Text(orderDetailsController.order_no,
+                                    style: TextStyle(fontSize: 16)),
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Text('Order total   :     ',
+                                    style: TextStyle(fontSize: 16)),
+                                Text(
+                                    '\u{20B9}${((double.parse(orderDetailsController.order_amount) * 100).round() / 100).toString()}',
+                                    style: TextStyle(fontSize: 16)),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: ListView.builder(
+                            itemCount:
+                                orderDetailsController.orderDetails.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              OrderDetails product =
+                                  orderDetailsController.orderDetails[index];
+                              return Card(
+                                child: Padding(
+                                  padding: EdgeInsets.only(left: 15, top: 10),
+                                  child: Column(
+                                    children: [
+                                      Row(
                                         children: [
                                           Container(
                                             padding: EdgeInsets.only(right: 10),
@@ -139,7 +246,12 @@ class MyOrderDetails extends StatelessWidget {
                                                           width: 2,
                                                         ),
                                                         Text(
-                                                          product.mrp,
+                                                          ((double.parse(product
+                                                                              .mrp) *
+                                                                          100)
+                                                                      .round() /
+                                                                  100)
+                                                              .toString(),
                                                           style: TextStyle(
                                                             color:
                                                                 Colors.blueGrey,
@@ -185,8 +297,11 @@ class MyOrderDetails extends StatelessWidget {
                                                       children: [
                                                         Text(
                                                           '\u{20B9} ' +
-                                                              product
-                                                                  .totalqtymrp,
+                                                              ((double.parse(product.totalqtymrp) *
+                                                                              100)
+                                                                          .round() /
+                                                                      100)
+                                                                  .toString(),
                                                           style: TextStyle(
                                                             color: Colors
                                                                 .pinkAccent
@@ -277,14 +392,32 @@ class MyOrderDetails extends StatelessWidget {
                                           ),
                                         ],
                                       ),
-                                    ),
-                                  );
-                                }),
-                          ),
-                        ],
-                      )
-                : Container(child: Center(child: CircularProgressIndicator())),
-          )),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            }),
+                      ),
+                      Obx(
+                        () => orderDetailsController.payment_status.value == "1"
+                            ? ElevatedButton(
+                                onPressed: openCheckout, child: Text('Pay Now'))
+                            : ElevatedButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => OpenPDF(
+                                              'https://test.medrpha.com/pdf/sss.pdf')));
+                                },
+                                child: Text(
+                                  'View Invoice',
+                                )),
+                      ),
+                    ],
+                  )
+            : Container(child: Center(child: CircularProgressIndicator())),
+      )),
     );
   }
 }
