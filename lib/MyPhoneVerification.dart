@@ -22,9 +22,9 @@ import 'localPinScreen.dart';
 import 'myWidget/my_common_widget.dart';
 
 class MyPhoneVerification extends StatefulWidget {
-  String _mobile;
+  String _mobile, regStatus;
 
-  MyPhoneVerification(this._mobile);
+  MyPhoneVerification(this._mobile, this.regStatus);
   @override
   _PhoneVerification createState() {
     return _PhoneVerification();
@@ -117,12 +117,15 @@ class _PhoneVerification extends State<MyPhoneVerification> {
               data['complete_reg_status'] == "True" ? true : false;
           _adminstatus = data['adminstatus'] == "True" ? true : false;
           print('$_session_id $_complete_reg_status $_adminstatus');
+          await PrefData.setSessionID(_session_id);
+          Get.put<LocalSessionController>(LocalSessionController());
           Navigator.pushReplacement(
               context,
               MaterialPageRoute(
                 builder: (context) => LocalPinScreen(
                     mobile: widget._mobile,
                     session: _session_id,
+                    userType: widget.regStatus,
                     complete_reg_status: _complete_reg_status,
                     adminstatus: _adminstatus),
               ));

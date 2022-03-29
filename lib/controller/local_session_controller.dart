@@ -28,7 +28,7 @@ class LocalSessionController extends GetxController {
   @override
   Future onInit() async {
     super.onInit();
-    print('getting session now');
+    print('LocalsessionController init: getting session now ');
     await getSessionData();
     print(
         'Init called from Local session controller, and init has been called after getting the pref data');

@@ -13,11 +13,12 @@ import 'package:pin_input_text_field/pin_input_text_field.dart';
 import 'myWidget/my_common_widget.dart';
 
 class LocalPinScreen extends StatefulWidget {
-  String mobile, session;
+  String mobile, session, userType;
   bool complete_reg_status, adminstatus;
   LocalPinScreen(
       {@required this.mobile,
       @required this.session,
+      @required this.userType,
       @required this.complete_reg_status,
       @required this.adminstatus});
   @override

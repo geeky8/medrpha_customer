@@ -14,6 +14,12 @@ class LocalSession {
     } catch (e) {
       regCompleted = false;
       adminApproved = false;
+    } finally {
+      regCompleted = false;
+      adminApproved = false;
+      session = '';
+      mobileNo = '';
+      pin = '';
     }
   }
 }

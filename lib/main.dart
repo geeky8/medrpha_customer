@@ -36,6 +36,10 @@ Future<void> initData() async {
   var session_id = await PrefData.getSessionID();
   if (session_id != null) {
     Get.put<LocalSessionController>(LocalSessionController());
+    print(
+        "main.dert:The session id in LocalSession is present - ${session_id.toString()}");
+  } else {
+    print("main.dert:The session id in LocalSession is blank");
   }
 
   // print('Starting getx service for country');

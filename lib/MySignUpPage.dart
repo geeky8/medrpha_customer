@@ -89,6 +89,8 @@ class _SignUpPage extends State<MySignUpPage> {
       // }
       print(jsonData['status']);
       print(jsonData['message']);
+      //If the user registration exists then create Local Session Controller
+      String regStatus = jsonData['status'];
       if (jsonData['status'] == "1" || jsonData['status'] == "2") {
         bool userType = jsonData['status'] == "1" ? true : false;
         print("The user bool value ${userType}");
@@ -100,7 +102,7 @@ class _SignUpPage extends State<MySignUpPage> {
         Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (context) => MyPhoneVerification(mobile),
+              builder: (context) => MyPhoneVerification(mobile, regStatus),
             ));
       }
     } else {
@@ -124,7 +126,6 @@ class _SignUpPage extends State<MySignUpPage> {
     setState(() {
       _buttonState = false;
     });
-
     print('The value of mobile is :' + textMobileController.text);
     final String mob = textMobileController.text;
     if (mob == null || mob.length != 10 || int.tryParse(mob) == null) {
