@@ -1,3 +1,9 @@
+import 'dart:io';
+import 'dart:isolate';
+import 'dart:ui';
+import 'dart:async';
+import 'package:path_provider/path_provider.dart';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
@@ -5,6 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_medical_ui/view/open_pdf.dart';
 import 'package:get/get.dart';
 import 'package:flutter_medical_ui/apicalls/api_service.dart';
+import 'package:internet_file/storage_io.dart';
 
 import 'controller/customer_controller.dart';
 import 'controller/local_session_controller.dart';
@@ -13,6 +20,11 @@ import 'controller/order_history_controller.dart';
 import 'model/order_details.dart';
 import 'myWidget/no_item_found.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
+import 'package:internet_file/internet_file.dart';
+import 'package:dio/dio.dart';
+import 'package:downloads_path_provider_28/downloads_path_provider_28.dart';
+import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import 'my_order_history.dart';
 
@@ -36,7 +48,7 @@ class MyOrderDetails extends StatelessWidget {
     // 'key' : 'rzp_test_DgTJRx7VR36Tvl',
     // 'key': 'rzp_live_kfbonxeuRfZYaL',
     var options = {
-      'key': 'rzp_test_DgTJRx7VR36Tvl',
+      'key': 'rzp_live_kfbonxeuRfZYaL',
       'amount':
           (double.parse(orderDetailsController.order_amount) * 100).round(),
       'name': 'Mederpha',
@@ -402,22 +414,112 @@ class MyOrderDetails extends StatelessWidget {
                         () => orderDetailsController.payment_status.value == "1"
                             ? ElevatedButton(
                                 onPressed: openCheckout, child: Text('Pay Now'))
-                            : ElevatedButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => OpenPDF(
-                                              'https://test.medrpha.com/pdf/sss.pdf')));
-                                },
-                                child: Text(
-                                  'View Invoice',
-                                )),
+                            : Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => OpenPDF(
+                                                  'https://test.medrpha.com/pdf/sss.pdf')));
+                                    },
+                                    child: Text(
+                                      'View Invoice',
+                                    ),
+                                  ),
+                                  SizedBox(width: 5),
+                                  ElevatedButton(
+                                    onPressed: () async {
+                                      Map<Permission, PermissionStatus>
+                                          statuses = await [
+                                        Permission.storage,
+                                        //add more permission to request here.
+                                      ].request();
+
+                                      if (statuses[Permission.storage]
+                                          .isGranted) {
+                                        var dir = await DownloadsPathProvider
+                                            .downloadsDirectory;
+                                        if (dir != null) {
+                                          String savename = savedFileName;
+                                          String savePath =
+                                              dir.path + "/$savename";
+                                          print(savePath);
+                                          //output:  /storage/emulated/0/Download/banner.png
+
+                                          try {
+                                            await Dio()
+                                                .download(fileurl, savePath,
+                                                    onReceiveProgress:
+                                                        (received, total) {
+                                              if (total != -1) {
+                                                print((received / total * 100)
+                                                        .toStringAsFixed(0) +
+                                                    "%");
+                                                //you can build progressbar feature too
+                                              }
+                                            });
+                                            print(
+                                                "File(${savedFileName}) is saved to download folder.");
+                                            ScaffoldMessenger.of(context)
+                                                .showSnackBar(SnackBar(
+                                              backgroundColor: Colors.teal,
+                                              content: Text(
+                                                  'File(${savedFileName}) is saved to download folder'),
+                                            ));
+                                          } on DioError catch (e) {
+                                            print(e.message);
+                                          }
+                                        }
+                                      } else {
+                                        print(
+                                            "No permission to read and write.");
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(SnackBar(
+                                          backgroundColor: Colors.teal,
+                                          content: Text(
+                                              'No permission to save file'),
+                                        ));
+                                      }
+                                    },
+                                    child: Icon(Icons.download_outlined),
+                                  )
+                                ],
+                              ),
                       ),
                     ],
                   )
             : Container(child: Center(child: CircularProgressIndicator())),
       )),
     );
+  }
+
+  String fileurl = "https://test.medrpha.com/pdf/sss.pdf";
+  String savedFileName = "invoice.pdf";
+  void downloadLink(link) async {
+    final storageIO = InternetFileStorageIO();
+    Directory appDocDirectory = await getTemporaryDirectory();
+
+//     new Directory(appDocDirectory.path + '/' + 'dir').create(recursive: true)
+// // The created directory is returned as a Future.
+//         .then((Directory directory) {
+//       print('Path of New Dir: ' + directory.path);
+//     });
+    print('the path to be saves is: ' + appDocDirectory.path);
+    await InternetFile.get(
+      link,
+      storage: storageIO,
+      storageAdditional: {
+        'filename': 'invoice.pdf',
+        'location': appDocDirectory.path,
+      },
+    );
+  }
+
+  Future<Directory> _tempDirectory;
+  void _requestTempDirectory() {
+    _tempDirectory = getTemporaryDirectory();
   }
 }

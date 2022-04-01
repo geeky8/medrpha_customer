@@ -31,6 +31,8 @@ class MyNewHomePage extends StatelessWidget {
   static CustomerController custController = Get.put(CustomerController());
 
   var _selectedPage = 0.obs;
+  var adminAprovedForCart;
+  var filtered;
   double width = 0;
   static List<Widget> pages = [
     // const buildProductPage(),
@@ -40,13 +42,17 @@ class MyNewHomePage extends StatelessWidget {
 
   void _onItemTap(int index) {
     print('Index tapped ${index}');
+
     _selectedPage.value = index;
   }
 
   @override
   Widget build(BuildContext context) {
     String searchVal = '';
+
     LocalSessionController ls = Get.find<LocalSessionController>();
+    print("Admin appreved stat: " + ls.getAdminAprovalStatus().toString());
+    adminAprovedForCart = ls.getAdminAprovalStatus().obs;
     CustomerController cs = Get.find<CustomerController>();
     String _session = ls.getSessionValue();
     print('Session Value from localsession ${_session}');
@@ -270,7 +276,8 @@ class MyNewHomePage extends StatelessWidget {
                     Center(
                       child: ElevatedButton(
                         style: ConstantData.btnStylePrimary,
-                        onPressed: cc.myCart.length > 0
+                        onPressed: cc.myCart.length > 0 &&
+                                ls.getAdminAprovalStatus()
                             ? () {
                                 Navigator.push(
                                   NavigationService.navigatorKey.currentContext,
@@ -307,7 +314,7 @@ class MyNewHomePage extends StatelessWidget {
 
   static Column buildProductPage() {
     GlobalKey<FormState> _formKeySearch = GlobalKey<FormState>();
-
+    var filtered = true.obs;
     LocalSessionController ls = Get.find<LocalSessionController>();
     String _session = ls.getSessionValue();
     print('Session val from prod Build ${_session}');
@@ -378,15 +385,26 @@ class MyNewHomePage extends StatelessWidget {
           child: Row(
             children: [
               GestureDetector(
-                onTap: () => getUpdatedProductList(0),
+                onTap: () {
+                  filtered.value = true;
+                  Get.find<CategoryController>().clearHighlight();
+                  getUpdatedProductList(0);
+                },
                 child: Padding(
                   padding: const EdgeInsets.all(10.0),
                   child: Column(
                     children: [
-                      CircleAvatar(
-                        child: Icon(
-                          Icons.medical_services,
-                          color: Colors.red,
+                      Obx(
+                        () => CircleAvatar(
+                          backgroundColor:
+                              filtered.value ? Colors.red : Colors.teal,
+                          radius: 22,
+                          child: CircleAvatar(
+                            child: Icon(
+                              Icons.medical_services,
+                              color: Colors.red,
+                            ),
+                          ),
                         ),
                       ),
                       Text('All'),
@@ -404,14 +422,27 @@ class MyNewHomePage extends StatelessWidget {
                       // print(category.categoryName);
                       //return Text(category.categoryName ?? 'Not available');
                       return GestureDetector(
-                        onTap: () => getUpdatedProductList(category.catid),
+                        onTap: () {
+                          filtered.value = false;
+                          getUpdatedProductList(category.catid);
+                          controller.highlightCategory(category.catid);
+                        },
                         child: Padding(
                           padding: const EdgeInsets.all(10.0),
                           child: Column(
                             children: [
-                              CircleAvatar(
-                                backgroundImage: NetworkImage(
-                                    category.base_url + category.imagedata),
+                              Obx(
+                                () => CircleAvatar(
+                                  backgroundColor:
+                                      category.highlighted.value == true
+                                          ? Colors.red
+                                          : Colors.cyan,
+                                  radius: 22,
+                                  child: CircleAvatar(
+                                    backgroundImage: NetworkImage(
+                                        category.base_url + category.imagedata),
+                                  ),
+                                ),
                               ),
                               Text(category.categoryName),
                             ],

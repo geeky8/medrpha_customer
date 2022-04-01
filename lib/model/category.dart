@@ -3,6 +3,7 @@
 //     final category = categoryFromJson(jsonString);
 
 import 'dart:convert';
+import 'package:get/get.dart';
 
 List<Category> categoryFromJson(String str) =>
     List<Category>.from(json.decode(str).map((x) => Category.fromJson(x)));
@@ -16,11 +17,13 @@ class Category {
     this.catid,
     this.categoryName,
     this.imagedata,
+    this.highlighted,
   });
   int ii;
   int catid;
   String categoryName;
   String imagedata;
+  var highlighted;
 
   factory Category.fromJson(Map<String, dynamic> json) {
     // print(json["catid"]);
@@ -29,6 +32,7 @@ class Category {
       catid: json["catid"],
       categoryName: json["category_name"],
       imagedata: json["imagedata"],
+      highlighted: false.obs,
     );
   }
   Map<String, dynamic> toJson() => {

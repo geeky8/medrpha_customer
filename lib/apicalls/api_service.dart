@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_medical_ui/controller/checkout_controller.dart';
 import 'package:flutter_medical_ui/model/category.dart';
 import 'package:flutter_medical_ui/model/city.dart';
 import 'package:flutter_medical_ui/model/country.dart';
@@ -12,6 +13,7 @@ import 'package:flutter_medical_ui/model/product.dart';
 import 'package:flutter_medical_ui/model/product_details.dart';
 import 'package:flutter_medical_ui/model/shipping_address.dart';
 import 'package:flutter_medical_ui/model/state.dart';
+import 'package:flutter_medical_ui/myutil/common_function.dart';
 import 'package:http/http.dart' as http;
 
 class ApiService {
@@ -304,6 +306,8 @@ class ApiService {
     request.fields["sessid"] = session_id;
     request.files.add(await http.MultipartFile.fromPath('image', filepath));
     var res = await request.send();
+
+    clearCart();
     return res.reasonPhrase;
   }
 
@@ -487,6 +491,8 @@ class ApiService {
         return "0";
       } else {
         String status = jsonData['status'];
+
+        clearCart();
         return status;
       }
     } else {
@@ -514,6 +520,8 @@ class ApiService {
         return "0";
       } else {
         String status = jsonData['status'];
+
+        clearCart();
         return status;
       }
     } else {
@@ -536,6 +544,8 @@ class ApiService {
         return "0";
       } else {
         String status = jsonData['status'];
+
+        clearCart();
         return status;
       }
     } else {
@@ -558,6 +568,8 @@ class ApiService {
         return "0";
       } else {
         String status = jsonData['status'];
+
+        clearCart();
         return status;
       }
     } else {
@@ -581,6 +593,7 @@ class ApiService {
       if (jsonData['status'] == "0" || jsonData['status'] == null) {
         return "0";
       } else {
+        clearCart();
         String status = jsonData['status'];
         return status;
       }
@@ -606,11 +619,19 @@ class ApiService {
         return "0";
       } else {
         String status = jsonData['status'];
+
+        clearCart();
         return status;
       }
     } else {
       return "0";
     }
+  }
+
+  static clearCart() {
+    final CheckoutController cc = CheckoutController();
+    cc.clearLocalCart();
+    CommonFunctions().refreshOrders();
   }
 
   static Future<Customer> getCustomerData({String sessionID}) async {

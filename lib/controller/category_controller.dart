@@ -41,4 +41,21 @@ class CategoryController extends GetxService {
       }
     }
   }
+
+  void highlightCategory(int catid) {
+    print("Category to heighlight: " + catid.toString());
+    categoryList.forEach((category) {
+      if (category.catid == catid) {
+        category.highlighted.value = true;
+      } else {
+        category.highlighted.value = false;
+      }
+    });
+  }
+
+  void clearHighlight() {
+    categoryList.forEach((category) {
+      category.highlighted.value = false;
+    });
+  }
 }

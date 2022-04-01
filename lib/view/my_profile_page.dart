@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:email_validator/email_validator.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_medical_ui/apicalls/api_service.dart';
 import 'package:flutter_medical_ui/controller/city_controller.dart';
@@ -192,6 +193,28 @@ class _MyProfilePageState extends State<MyProfilePage> {
 
   updateProfile() async {
     print('Btn clieked');
+    final shouldEdit = await showCupertinoDialog(
+        context: context,
+        builder: (context) {
+          return CupertinoAlertDialog(
+            title: Text('Do you want to update your Profile?'),
+            content: Text(
+                'Note: If you edit your profile then you will not be able to purchase any product from the app till the time admin approves your profile. Do you still want to update your profile?'),
+            actions: <Widget>[
+              CupertinoDialogAction(
+                child: Text('Yes'),
+                onPressed: () => Navigator.pop(context, true),
+              ),
+              CupertinoDialogAction(
+                child: Text('No'),
+                onPressed: () => Navigator.pop(context, false),
+              ),
+            ],
+          );
+        });
+    if (shouldEdit == false) {
+      return;
+    }
     if (firmNameController.text.isEmpty) {
       showSnackbarDialog(bc, 'Firm/Company Name can\'t be blank');
       firmNameFocus.requestFocus();
@@ -234,6 +257,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
           showSnackbarDialog(bc, 'Data successfully updated',
               bgColor: Colors.green.shade600);
           CustomerController cs = Get.find<CustomerController>();
+          cs.customer.value = newCustomer;
           cs.dataSaved(true);
           Get.find<ProductController>().getApprovedStatus();
           Get.find<ProductController>().getProductByCat(0);
@@ -524,6 +548,31 @@ class _MyProfilePageState extends State<MyProfilePage> {
                                   const EdgeInsets.symmetric(vertical: 16.0),
                               child: ElevatedButton(
                                 onPressed: () async {
+                                  final shouldEdit = await showCupertinoDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return CupertinoAlertDialog(
+                                          title: Text(
+                                              'Do you want to update your Profile?'),
+                                          content: Text(
+                                              'Note: If you edit your profile then you will not be able to purchase any product from the app till the time admin approves your profile. Do you still want to update your profile?'),
+                                          actions: <Widget>[
+                                            CupertinoDialogAction(
+                                              child: Text('Yes'),
+                                              onPressed: () =>
+                                                  Navigator.pop(context, true),
+                                            ),
+                                            CupertinoDialogAction(
+                                              child: Text('No'),
+                                              onPressed: () =>
+                                                  Navigator.pop(context, false),
+                                            ),
+                                          ],
+                                        );
+                                      });
+                                  if (shouldEdit == false) {
+                                    return;
+                                  }
                                   if (_formKeyGST.currentState.validate()) {
                                     print('data saved');
 
@@ -883,6 +932,31 @@ class _MyProfilePageState extends State<MyProfilePage> {
                       padding: const EdgeInsets.symmetric(vertical: 16.0),
                       child: ElevatedButton(
                         onPressed: () async {
+                          final shouldEdit = await showCupertinoDialog(
+                              context: context,
+                              builder: (context) {
+                                return CupertinoAlertDialog(
+                                  title: Text(
+                                      'Do you want to update your Profile?'),
+                                  content: Text(
+                                      'Note: If you edit your profile then you will not be able to purchase any product from the app till the time admin approves your profile. Do you still want to update your profile?'),
+                                  actions: <Widget>[
+                                    CupertinoDialogAction(
+                                      child: Text('Yes'),
+                                      onPressed: () =>
+                                          Navigator.pop(context, true),
+                                    ),
+                                    CupertinoDialogAction(
+                                      child: Text('No'),
+                                      onPressed: () =>
+                                          Navigator.pop(context, false),
+                                    ),
+                                  ],
+                                );
+                              });
+                          if (shouldEdit == false) {
+                            return;
+                          }
                           if (_formKeyDL.currentState.validate()) {
                             print('data saved');
 
@@ -1134,6 +1208,31 @@ class _MyProfilePageState extends State<MyProfilePage> {
                                   const EdgeInsets.symmetric(vertical: 16.0),
                               child: ElevatedButton(
                                 onPressed: () async {
+                                  final shouldEdit = await showCupertinoDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return CupertinoAlertDialog(
+                                          title: Text(
+                                              'Do you want to update your Profile?'),
+                                          content: Text(
+                                              'Note: If you edit your profile then you will not be able to purchase any product from the app till the time admin approves your profile. Do you still want to update your profile?'),
+                                          actions: <Widget>[
+                                            CupertinoDialogAction(
+                                              child: Text('Yes'),
+                                              onPressed: () =>
+                                                  Navigator.pop(context, true),
+                                            ),
+                                            CupertinoDialogAction(
+                                              child: Text('No'),
+                                              onPressed: () =>
+                                                  Navigator.pop(context, false),
+                                            ),
+                                          ],
+                                        );
+                                      });
+                                  if (shouldEdit == false) {
+                                    return;
+                                  }
                                   if (_formKeyFSSAI.currentState.validate()) {
                                     print('data saved');
 
@@ -1178,7 +1277,8 @@ class _MyProfilePageState extends State<MyProfilePage> {
                             //Show uploaded Image
 
                             Obx(
-                              () => _fssaiPicName.value.length > 0
+                              //() => _fssaiPicName.value.length > 0
+                              () => _fssaiPicName.value != null
                                   ? SingleChildScrollView(
                                       child: Column(
                                         children: [
@@ -1416,6 +1516,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
     String _country_id = cs.customer.value.countryid;
     String _state_id = cs.customer.value.stateid;
     String _city_id = cs.customer.value.cityid;
+    String _phoneno = cs.customer.value.phoneno;
     String _pin_id = cs.customer.value.areaid;
     String _address = cs.customer.value.address;
     String _contact_name = cs.customer.value.personName;

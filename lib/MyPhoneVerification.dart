@@ -118,6 +118,7 @@ class _PhoneVerification extends State<MyPhoneVerification> {
           _adminstatus = data['adminstatus'] == "True" ? true : false;
           print('$_session_id $_complete_reg_status $_adminstatus');
           await PrefData.setSessionID(_session_id);
+          await PrefData.setMobileNo(mobile);
           Get.put<LocalSessionController>(LocalSessionController());
           Navigator.pushReplacement(
               context,

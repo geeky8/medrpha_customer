@@ -63,6 +63,7 @@ class _PhoneVerification extends State<LocalPinScreen> {
       mobile, session, adminstatus, complete_reg_status, pin) async {
     await PrefData.setMobileNo(mobile);
     await PrefData.setSessionID(session);
+    await PrefData.setMobileNo(mobile);
     await PrefData.setAdminApproved(adminstatus);
     await PrefData.setRegCompleted(complete_reg_status);
     await PrefData.setPin(pin);
@@ -174,8 +175,8 @@ class _PhoneVerification extends State<LocalPinScreen> {
                               ConstantData.primaryColor),
 
                           obscureStyle: ObscureStyle(
-                            isTextObscure: false,
-                            obscureText: '🤪',
+                            isTextObscure: true,
+                            obscureText: '*',
                           ),
                           // hintText: _kDefaultHint,
                         ),
@@ -225,7 +226,7 @@ class _PhoneVerification extends State<LocalPinScreen> {
                   Padding(
                     padding: const EdgeInsets.only(left: 40.0),
                     child: Text(
-                      'Retype PIN',
+                      'Confirm PIN',
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 15,
@@ -253,7 +254,7 @@ class _PhoneVerification extends State<LocalPinScreen> {
                               ConstantData.primaryColor),
 
                           obscureStyle: ObscureStyle(
-                            isTextObscure: true,
+                            isTextObscure: false,
                             obscureText: '*',
                           ),
                           // hintText: _kDefaultHint,

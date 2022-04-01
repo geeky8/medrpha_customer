@@ -43,8 +43,8 @@ android {
         applicationId "com.kitinfinet.medclient"
         minSdkVersion 21
         targetSdkVersion 30
-        versionCode 8
-        versionName "1.01.1"
+        versionCode 10
+        versionName "1.01.3"
     }
 
     signingConfigs {
