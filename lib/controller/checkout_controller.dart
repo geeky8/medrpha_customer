@@ -15,7 +15,7 @@ class CheckoutController extends GetxController {
     super.onInit();
   }
 
-  checkoutCart({int checkOutType, double finalPrice}) async {
+  checkoutCart({int checkOutType, int payLater, double finalPrice}) async {
     List<Product> tempCart = [];
     LocalSessionController ls = Get.find<LocalSessionController>();
     String _sessionID = ls.getSessionValue();
@@ -29,6 +29,7 @@ class CheckoutController extends GetxController {
         var itemsResult = await ApiService.checkoutCartItems(
             sessionID: _sessionID,
             paymentMode: checkOutType,
+            payLater: payLater,
             finalPrice: finalPrice);
         if (itemsResult != null) {
           if (itemsResult["status"] == "1") {

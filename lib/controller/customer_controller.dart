@@ -10,6 +10,8 @@ class CustomerController extends GetxController {
   var gstSaved = true.obs;
   var fssaiSaved = true.obs;
   var dlSaved = true.obs;
+  var payLater = false.obs;
+
   bool get gstUpdated => customer.value.gstnoyesno == "1" ? false : true;
   set gstUpdated(bool val) => val == true
       ? customer.value.gstnoyesno = "2"
@@ -45,6 +47,8 @@ class CustomerController extends GetxController {
           customer = customerRes.obs;
         }
       } finally {
+        var res = await ApiService.getUserPayStatus(sessionID: _sessionID);
+        payLater.value = res["paylater"];
         loaded(true);
         print('Customer data loaded');
       }

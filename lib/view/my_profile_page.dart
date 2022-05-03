@@ -28,6 +28,7 @@ import 'package:flutter_medical_ui/view/open_pdf.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MyProfilePage extends StatefulWidget {
   @override
@@ -36,7 +37,8 @@ class MyProfilePage extends StatefulWidget {
 
 class _MyProfilePageState extends State<MyProfilePage> {
   static const blankStringUri = "https://medrpha.com/user_reg/no_image.png";
-  static const pictureStringUri = "https://medrpha.com/user_reg/";
+  // TODO: Change the image path
+  static const pictureStringUri = "https://test.medrpha.com/user_reg/";
 
   var _countryItemsList = [].obs;
   var _stateItemsList = [].obs;
@@ -191,8 +193,26 @@ class _MyProfilePageState extends State<MyProfilePage> {
     }
   }
 
-  updateProfile() async {
+  updateProfile(bool tnc) async {
     print('Btn clieked');
+    if (tnc == false) {
+      await showCupertinoDialog(
+          context: context,
+          builder: (context) {
+            return CupertinoAlertDialog(
+              title: Text('Please accept Terms & Condition'),
+              content: Text(
+                  'Note: You need to accept the Terms & Condition before Proceeding futher'),
+              actions: <Widget>[
+                CupertinoDialogAction(
+                  child: Text('Ok'),
+                  onPressed: () => Navigator.pop(context, false),
+                ),
+              ],
+            );
+          });
+      return false;
+    }
     final shouldEdit = await showCupertinoDialog(
         context: context,
         builder: (context) {
@@ -1491,6 +1511,7 @@ class _MyProfilePageState extends State<MyProfilePage> {
   }
 
   Container buildProfilePage() {
+    var isChecked = false.obs;
     firmNameFocus = FocusNode();
     mail = FocusNode();
     phone = FocusNode();
@@ -2110,9 +2131,35 @@ class _MyProfilePageState extends State<MyProfilePage> {
                       children: [
                         // ConstantWidget.getButtonWidget(context, 'Save',
                         //     ConstantData.primaryColor, login),
+                        Row(
+                          children: [
+                            SizedBox(
+                              width: 20,
+                            ),
+                            Obx(
+                              () => Checkbox(
+                                  value: isChecked.value,
+                                  onChanged: (value) {
+                                    print(value);
+                                    isChecked.value = value;
+                                  }),
+                            ),
+                            Text('Accept'),
+                            TextButton(
+                              style: TextButton.styleFrom(
+                                textStyle: const TextStyle(fontSize: 14),
+                              ),
+                              onPressed: _launchURL,
+                              child: const Text('Terms & Condition'),
+                            ),
+                          ],
+                        ),
+
                         ElevatedButton(
                           style: ConstantData.btnStylePrimary,
-                          onPressed: updateProfile,
+                          onPressed: () {
+                            updateProfile(isChecked.value);
+                          },
                           child: const Text('Update Profile'),
                         ),
                         SizedBox(
@@ -2136,5 +2183,14 @@ class _MyProfilePageState extends State<MyProfilePage> {
         ],
       ),
     );
+  }
+
+  _launchURL() async {
+    const url = 'https://medrpha.com/terms_and_conditions.aspx';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
   }
 }

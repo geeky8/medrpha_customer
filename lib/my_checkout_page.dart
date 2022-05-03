@@ -4,6 +4,8 @@ import 'package:flutter/painting.dart';
 import 'package:flutter_medical_ui/controller/city_controller.dart';
 import 'package:flutter_medical_ui/controller/country_controller.dart';
 import 'package:flutter_medical_ui/controller/pin_controller.dart';
+import 'package:flutter_medical_ui/util/CustomDialog.dart';
+import 'package:flutter_medical_ui/util/confirm_dialog_box.dart';
 import 'package:get/get.dart';
 
 import 'controller/cart_controller.dart';
@@ -24,11 +26,13 @@ class MyCheckoutPage extends StatelessWidget {
   MyCheckoutPage() {
     print('in constructor');
   }
+  var _radioSelected = 1.obs;
+  var _radioVal = 1.obs;
 
   @override
   Widget build(BuildContext context) {
     // TODO: change product image path
-    //const base_url = "https://partner.medrpha.com/product_image/";
+    // const base_url = "https://partner.medrpha.com/product_image/";
     const base_url = "https://partnertest.medrpha.com/product_image/";
     // print('creatinging order details controller for order ID ${orderId}');
     final CustomerController cust = Get.find<CustomerController>();
@@ -346,25 +350,42 @@ class MyCheckoutPage extends StatelessWidget {
                                 SizedBox(
                                   height: 10,
                                 ),
-                                Row(
+                                Column(
                                   mainAxisSize: MainAxisSize.max,
                                   mainAxisAlignment:
                                       MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Column(
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
                                       children: [
-                                        Text(
-                                          'Payment Type',
-                                          style: TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.w500),
+                                        Text('Online/Cash'),
+                                        Radio(
+                                          value: 1,
+                                          groupValue: _radioSelected.value,
+                                          activeColor: Colors.blue,
+                                          onChanged: (value) {
+                                            _radioSelected.value = value;
+                                            _radioVal.value = 1;
+                                          },
                                         ),
-                                        Text(
-                                          'Cash on Delivery',
-                                          style: TextStyle(
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.w300),
-                                        ),
+                                        Visibility(
+                                            visible: cust.payLater.value,
+                                            child: Text('Pay Later')),
+                                        Visibility(
+                                          visible: cust.payLater.value,
+                                          child: Radio(
+                                            value: 2,
+                                            groupValue: _radioSelected.value,
+                                            activeColor: Colors.pink,
+                                            onChanged: (value) {
+                                              _radioSelected.value = value;
+                                              _radioVal.value = 2;
+                                            },
+                                          ),
+                                        )
                                       ],
                                     ),
                                     TextButton(
@@ -378,16 +399,24 @@ class MyCheckoutPage extends StatelessWidget {
                                       ),
                                       onPressed: cc.myCart.length > 0
                                           ? () {
-                                              Navigator.pushReplacement(
-                                                NavigationService.navigatorKey
-                                                    .currentContext,
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      MyCheckoutResult(
-                                                    paymentType: 1,
-                                                  ),
-                                                ),
-                                              );
+                                              showDialog(
+                                                  context: context,
+                                                  builder: (_) {
+                                                    return ConfirmDialogBox(
+                                                      payLater: _radioVal.value,
+                                                    );
+                                                  });
+                                              // Navigator.pushReplacement(
+                                              //   NavigationService.navigatorKey
+                                              //       .currentContext,
+                                              //   MaterialPageRoute(
+                                              //     builder: (context) =>
+                                              //         MyCheckoutResult(
+                                              //             paymentType: 1,
+                                              //             payLater:
+                                              //                 _radioVal.value),
+                                              //   ),
+                                              // );
                                             }
                                           : () {},
                                       child: const Text('Place Order'),

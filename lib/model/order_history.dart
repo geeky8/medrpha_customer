@@ -36,7 +36,7 @@ class OrderHistory {
     return OrderHistory(
       orderId: json["order_id"],
       orderNo: json["order_no"],
-      orderAmount: json["order_amount"],
+      orderAmount: json["roundvaltotal"],
       paymentStatus: pay_status.obs,
       placedDate: json["Placed_Date"],
       dispatchedDate: json["Dispatched_Date"],

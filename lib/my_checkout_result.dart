@@ -13,11 +13,12 @@ import 'view/my_getx_home_page.dart';
 
 class MyCheckoutResult extends StatelessWidget {
   String orderId;
-  MyCheckoutResult({this.paymentType}) {
+  MyCheckoutResult({this.paymentType, this.payLater}) {
     print('in constructor');
   }
 
   int paymentType;
+  int payLater;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +28,9 @@ class MyCheckoutResult extends StatelessWidget {
     final CartController cc = Get.find<CartController>();
     final CheckoutController checkOut = CheckoutController();
     checkOut.checkoutCart(
-        checkOutType: paymentType, finalPrice: cc.finalPrice.value);
+        checkOutType: paymentType,
+        payLater: payLater,
+        finalPrice: cc.finalPrice.value);
     return WillPopScope(
       onWillPop: () {
         return Navigator.pushReplacement(

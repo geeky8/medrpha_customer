@@ -22,6 +22,8 @@ class MyUploadPage extends StatelessWidget {
     this.picNo = picNo;
   }
   static const blankStringUri = "https://medrpha.com/user_reg/no_image.png";
+  //TODO: https://medrpha.com/user_reg/
+  //static const pictureStringUri = "https://test.medrpha.com/user_reg/";
   static const pictureStringUri = "https://medrpha.com/user_reg/";
   String title, picType, _sessionID;
   int picNo;

@@ -78,7 +78,7 @@ class _SignUpPage extends State<MySignUpPage> {
   }
 
   Future<String> getOtp(String mobile) async {
-    var url = Uri.parse('https://api.medrpha.com/api/Default/sendotp');
+    var url = Uri.parse('https://apitest.medrpha.com/api/Default/sendotp');
     var response = await http.post(url, body: {'contact': mobile});
     print('Response status: ${response.statusCode}');
     print('Response body: ${response.body}');

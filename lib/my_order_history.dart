@@ -323,11 +323,22 @@ class orderHistoryInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     orderDate ??= 'NA';
-    val = "\u{20B9}" + ((double.parse(val) * 100).round() / 100).toString();
-
+    //val = "\u{20B9}" + ((double.parse(val) * 100).round() / 100).toString();
+    String payStatusStr;
+    Color payColor;
+    if (paid == "1") {
+      payStatusStr = "Payment Pending";
+      payColor = Colors.red;
+    } else if (paid == "2") {
+      payStatusStr = "Paid";
+      payColor = Colors.green;
+    } else {
+      payStatusStr = "Pending/Pay Later";
+      payColor = Colors.cyan;
+    }
     Widget paidW = Text(
-      paid.value == "1" ? "Payment Pending" : "Paid",
-      style: TextStyle(color: paid.value == "1" ? Colors.red : Colors.green),
+      payStatusStr,
+      style: TextStyle(color: payColor),
     );
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,

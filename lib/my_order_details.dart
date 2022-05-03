@@ -47,10 +47,11 @@ class MyOrderDetails extends StatelessWidget {
     CustomerController cs = Get.find<CustomerController>();
     // 'key' : 'rzp_test_DgTJRx7VR36Tvl',
     // 'key': 'rzp_live_kfbonxeuRfZYaL',
+    //'amount':(double.parse(orderDetailsController.order_amount) * 100).round(),
     var options = {
       'key': 'rzp_live_kfbonxeuRfZYaL',
       'amount':
-          (double.parse(orderDetailsController.order_amount) * 100).round(),
+          double.parse((orderDetailsController.order_amount as String)) * 100,
       'name': 'Mederpha',
       'description': 'Online Medical Hub',
       'retry': {'enabled': true, 'max_count': 1},
@@ -105,8 +106,13 @@ class MyOrderDetails extends StatelessWidget {
     Razorpay _razorpay;
 
     ///TODO:  Change the image url
-    const base_url = "https://partnertest.medrpha.com/product_image/";
+    const base_url = "https://partner.medrpha.com/product_image/";
+    //const base_url = "https://partnertest.medrpha.com/product_image/";
     // print('creatinging order details controller for order ID ${orderId}');
+
+    //const base_url_pdf = " https://test.medrpha.com/InvoicePDF/";
+    const base_url_pdf = " https://medrpha.com/InvoicePDF/";
+
     orderDetailsController = OrderDetailsController();
     orderDetailsController.loadOrderDetailsData(orderId);
     return SafeArea(
@@ -176,7 +182,7 @@ class MyOrderDetails extends StatelessWidget {
                                 Text('Order total   :     ',
                                     style: TextStyle(fontSize: 16)),
                                 Text(
-                                    '\u{20B9}${((double.parse(orderDetailsController.order_amount) * 100).round() / 100).toString()}',
+                                    '\u{20B9}${orderDetailsController.order_amount}',
                                     style: TextStyle(fontSize: 16)),
                               ],
                             ),
@@ -258,12 +264,7 @@ class MyOrderDetails extends StatelessWidget {
                                                           width: 2,
                                                         ),
                                                         Text(
-                                                          ((double.parse(product
-                                                                              .mrp) *
-                                                                          100)
-                                                                      .round() /
-                                                                  100)
-                                                              .toString(),
+                                                          product.mrp,
                                                           style: TextStyle(
                                                             color:
                                                                 Colors.blueGrey,
@@ -309,11 +310,8 @@ class MyOrderDetails extends StatelessWidget {
                                                       children: [
                                                         Text(
                                                           '\u{20B9} ' +
-                                                              ((double.parse(product.totalqtymrp) *
-                                                                              100)
-                                                                          .round() /
-                                                                      100)
-                                                                  .toString(),
+                                                              product
+                                                                  .totalqtymrp,
                                                           style: TextStyle(
                                                             color: Colors
                                                                 .pinkAccent
@@ -411,7 +409,10 @@ class MyOrderDetails extends StatelessWidget {
                             }),
                       ),
                       Obx(
-                        () => orderDetailsController.payment_status.value == "1"
+                        () => orderDetailsController.payment_status.value ==
+                                    "1" ||
+                                orderDetailsController.payment_status.value ==
+                                    "3"
                             ? ElevatedButton(
                                 onPressed: openCheckout, child: Text('Pay Now'))
                             : Row(
@@ -423,7 +424,10 @@ class MyOrderDetails extends StatelessWidget {
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) => OpenPDF(
-                                                  'https://test.medrpha.com/pdf/sss.pdf')));
+                                                  base_url_pdf +
+                                                      orderDetailsController
+                                                          .order_no +
+                                                      '.pdf')));
                                     },
                                     child: Text(
                                       'View Invoice',
@@ -443,12 +447,17 @@ class MyOrderDetails extends StatelessWidget {
                                         var dir = await DownloadsPathProvider
                                             .downloadsDirectory;
                                         if (dir != null) {
+                                          savedFileName =
+                                              orderDetailsController.order_no +
+                                                  '.pdf';
                                           String savename = savedFileName;
                                           String savePath =
                                               dir.path + "/$savename";
                                           print(savePath);
                                           //output:  /storage/emulated/0/Download/banner.png
-
+                                          fileurl = base_url_pdf +
+                                              orderDetailsController.order_no +
+                                              '.pdf';
                                           try {
                                             await Dio()
                                                 .download(fileurl, savePath,
