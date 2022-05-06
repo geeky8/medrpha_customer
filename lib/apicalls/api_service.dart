@@ -30,7 +30,7 @@ class ApiService {
       "WPID": product.wpid,
       "saleprice": product.saleprice,
     };
-    var url = Uri.parse('https://apitest.medrpha.com/api/cart/addtocart');
+    var url = Uri.parse('https://api.medrpha.com/api/cart/addtocart');
     var response = await client.post(url, body: requestBody);
     if (response.statusCode == 200) {
       var jsonObj = response.body;
@@ -62,7 +62,7 @@ class ApiService {
       "priceID": product.priceId,
       "quantity": product.quantity.toString(),
     };
-    var url = Uri.parse('https://apitest.medrpha.com/api/cart/cartplus');
+    var url = Uri.parse('https://api.medrpha.com/api/cart/cartplus');
     var response = await client.post(url, body: requestBody);
     if (response.statusCode == 200) {
       var jsonObj = response.body;
@@ -97,7 +97,7 @@ class ApiService {
       "quantity": product.quantity.toString(),
       "qtyfield": newQuantity.toString()
     };
-    var url = Uri.parse('https://apitest.medrpha.com/api/cart/updatequantity');
+    var url = Uri.parse('https://api.medrpha.com/api/cart/updatequantity');
     var response = await client.post(url, body: requestBody);
     if (response.statusCode == 200) {
       var jsonObj = response.body;
@@ -128,7 +128,7 @@ class ApiService {
       "pid": product.pid,
       "priceID": product.priceId,
     };
-    var url = Uri.parse('https://apitest.medrpha.com/api/cart/cartminus');
+    var url = Uri.parse('https://api.medrpha.com/api/cart/cartminus');
     var response = await client.post(url, body: requestBody);
     if (response.statusCode == 200) {
       var jsonObj = response.body;
@@ -159,7 +159,7 @@ class ApiService {
       "pid": product.pid,
       "priceID": product.priceId,
     };
-    var url = Uri.parse('https://apitest.medrpha.com/api/cart/deletecart');
+    var url = Uri.parse('https://api.medrpha.com/api/cart/deletecart');
     var response = await client.post(url, body: requestBody);
     if (response.statusCode == 200) {
       var jsonObj = response.body;
@@ -183,7 +183,7 @@ class ApiService {
 
   static Future<List<Category>> getAllCategory({String sessionID}) async {
     List<Category> tempCategory = [];
-    var url = Uri.parse('https://apitest.medrpha.com/api/product/getcategory');
+    var url = Uri.parse('https://api.medrpha.com/api/product/getcategory');
     Map jsonBody = {
       "sessid": sessionID,
     };
@@ -210,7 +210,7 @@ class ApiService {
 
   static Future<List<Country>> getAllCountry({String sessionID}) async {
     List<Country> tempCountry = [];
-    var url = Uri.parse('https://apitest.medrpha.com/api/register/getcountry');
+    var url = Uri.parse('https://api.medrpha.com/api/register/getcountry');
     Map jsonBody = {
       "sessid": sessionID,
     };
@@ -237,7 +237,7 @@ class ApiService {
 
   static Future<List<States>> getAllState({String sessionID}) async {
     List<States> tempState = [];
-    var url = Uri.parse('https://apitest.medrpha.com/api/register/getstateall');
+    var url = Uri.parse('https://api.medrpha.com/api/register/getstateall');
     Map jsonBody = {
       "sessid": sessionID,
     };
@@ -262,7 +262,7 @@ class ApiService {
 
   static Future<List<City>> getAllCity({String sessionID}) async {
     List<City> tempCity = [];
-    var url = Uri.parse('https://apitest.medrpha.com/api/register/getcityall');
+    var url = Uri.parse('https://api.medrpha.com/api/register/getcityall');
     Map jsonBody = {
       "sessid": sessionID,
     };
@@ -315,7 +315,7 @@ class ApiService {
   }
 
   static Future<dynamic> getUserStatus({String sessionID}) async {
-    var url = Uri.parse('https://apitest.medrpha.com/api/Default/userstatus');
+    var url = Uri.parse('https://api.medrpha.com/api/Default/userstatus');
     Map jsonBody = {
       "sessid": sessionID,
     };
@@ -344,7 +344,7 @@ class ApiService {
   }
 
   static Future<dynamic> getUserPayStatus({String sessionID}) async {
-    var url = Uri.parse('https://apitest.medrpha.com/api/Default/userstatus');
+    var url = Uri.parse('https://api.medrpha.com/api/Default/userstatus');
     Map jsonBody = {
       "sessid": sessionID,
     };
@@ -371,8 +371,7 @@ class ApiService {
 
   static Future<List<Pin>> getAllPin({String sessionID}) async {
     List<Pin> tempPin = [];
-    var url =
-        Uri.parse('https://apitest.medrpha.com/api/register/getpincodeall');
+    var url = Uri.parse('https://api.medrpha.com/api/register/getpincodeall');
     Map jsonBody = {
       "sessid": sessionID,
     };
@@ -396,7 +395,7 @@ class ApiService {
   }
 
   static Future<dynamic> getCartItems({String sessionID}) async {
-    var url = Uri.parse('https://apitest.medrpha.com/api/cart/viewcart');
+    var url = Uri.parse('https://api.medrpha.com/api/cart/viewcart');
     Map jsonBody = {
       "sessid": sessionID,
     };
@@ -471,7 +470,7 @@ class ApiService {
   static Future<List<Product>> getAllProduct(
       {String sessionID, catId = '', productName = ''}) async {
     List<Product> MyProductList = [];
-    var url = Uri.parse('https://apitest.medrpha.com/api/product/productlist');
+    var url = Uri.parse('https://api.medrpha.com/api/product/productlist');
     Map jsonBody = {
       "sessid": sessionID,
       "term": productName,
@@ -499,7 +498,7 @@ class ApiService {
 
   static Future<String> updateCustomer(
       {String sessionID, Customer customer}) async {
-    var url = Uri.parse('https://apitest.medrpha.com/api/register/register');
+    var url = Uri.parse('https://api.medrpha.com/api/register/register');
     Map jsonBody = {
       "sessid": sessionID,
       "firm_name": customer.firmName,
@@ -536,8 +535,7 @@ class ApiService {
 
   static Future<String> updateDL(
       {String sessionID, String dlno, String dlname, String validTill}) async {
-    var url =
-        Uri.parse('https://apitest.medrpha.com/api/register/registerdlno');
+    var url = Uri.parse('https://api.medrpha.com/api/register/registerdlno');
     Map jsonBody = {
       "sessid": sessionID,
       "txtdlno": dlno,
@@ -566,8 +564,7 @@ class ApiService {
   }
 
   static Future<String> updateFSSAI({String sessionID, String fssaino}) async {
-    var url =
-        Uri.parse('https://apitest.medrpha.com/api/register/registerfssai');
+    var url = Uri.parse('https://api.medrpha.com/api/register/registerfssai');
     Map jsonBody = {"sessid": sessionID, "fssaiNo": fssaino};
     print(jsonBody);
     var response = await client.post(url, body: jsonBody);
@@ -591,8 +588,7 @@ class ApiService {
   }
 
   static Future<String> updateGST({String sessionID, String gstno}) async {
-    var url =
-        Uri.parse('https://apitest.medrpha.com/api/register/registergstno');
+    var url = Uri.parse('https://api.medrpha.com/api/register/registergstno');
     Map jsonBody = {"sessid": sessionID, "gstno": gstno};
     print(jsonBody);
     var response = await client.post(url, body: jsonBody);
@@ -615,8 +611,8 @@ class ApiService {
   }
 
   static Future<String> deleteGST({String sessionID}) async {
-    var url = Uri.parse(
-        'https://apitest.medrpha.com/api/register/registergstnodelete');
+    var url =
+        Uri.parse('https://api.medrpha.com/api/register/registergstnodelete');
     Map jsonBody = {
       "sessid": sessionID,
     };
@@ -640,8 +636,8 @@ class ApiService {
   }
 
   static Future<String> deleteFSSAI({String sessionID}) async {
-    var url = Uri.parse(
-        'https://apitest.medrpha.com/api/register/registerfssaidelete');
+    var url =
+        Uri.parse('https://api.medrpha.com/api/register/registerfssaidelete');
     Map jsonBody = {
       "sessid": sessionID,
     };
@@ -673,7 +669,7 @@ class ApiService {
 
   static Future<Customer> getCustomerData({String sessionID}) async {
     Customer tempCustomer;
-    var url = Uri.parse('https://apitest.medrpha.com/api/profile/getprofile');
+    var url = Uri.parse('https://api.medrpha.com/api/profile/getprofile');
     Map jsonBody = {
       "sessid": sessionID,
     };
@@ -699,8 +695,7 @@ class ApiService {
   static Future<ProductDetails> getProductDetails(
       {String sessionID, String p_id, String price_id}) async {
     ProductDetails tempProduct;
-    var url =
-        Uri.parse('https://apitest.medrpha.com/api/product/productdetails');
+    var url = Uri.parse('https://api.medrpha.com/api/product/productdetails');
     Map jsonBody = {"sessid": sessionID, "pid": p_id, "price_id": price_id};
     print(jsonBody);
     var response = await client.post(url, body: jsonBody);
@@ -725,8 +720,7 @@ class ApiService {
   static Future<ShippingAddress> getShippingAddressData(
       {String sessionID}) async {
     ShippingAddress tempCustomer;
-    var url =
-        Uri.parse('https://apitest.medrpha.com/api/order/shippingaddress');
+    var url = Uri.parse('https://api.medrpha.com/api/order/shippingaddress');
     Map jsonBody = {
       "sessid": sessionID,
     };
@@ -752,7 +746,7 @@ class ApiService {
   static Future<List<OrderHistory>> getOrderHistoryData(
       {String sessionID, String startDate, String endDate}) async {
     List<OrderHistory> tempOrderHistory = [];
-    var url = Uri.parse('https://apitest.medrpha.com/api/order/orderlist');
+    var url = Uri.parse('https://api.medrpha.com/api/order/orderlist');
     Map jsonBody;
     if (startDate != null && endDate != null) {
       jsonBody = {
@@ -788,7 +782,7 @@ class ApiService {
 
   static Future<void> updatePaymentStatus(
       {String sessionID, String orderId}) async {
-    var url = Uri.parse('https://apitest.medrpha.com/api/order/payconfirmed');
+    var url = Uri.parse('https://api.medrpha.com/api/order/payconfirmed');
     Map jsonBody = {
       "sessid": sessionID,
       "order_id": orderId,
@@ -810,7 +804,7 @@ class ApiService {
   static Future<dynamic> getOrderDetailsData(
       {String sessionID, String orderId}) async {
     List<OrderDetails> tempOrderDetails = [];
-    var url = Uri.parse('https://apitest.medrpha.com/api/order/orderdetail');
+    var url = Uri.parse('https://api.medrpha.com/api/order/orderdetail');
     Map jsonBody = {"sessid": sessionID, "order_id": orderId};
     var response = await client.post(url, body: jsonBody);
 

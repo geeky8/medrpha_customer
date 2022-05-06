@@ -73,7 +73,8 @@ class _PhoneVerification extends State<MyPhoneVerification> {
     setState(() {
       _resendBtnStatus = false;
     });
-    var url = Uri.parse('https://apitest.medrpha.com/api/Default/resendotp');
+    // var url = Uri.parse('https://apitest.medrpha.com/api/Default/resendotp');
+    var url = Uri.parse('https://api.medrpha.com/api/Default/resendotp');
     var response = await http.post(url, body: {'contact': widget._mobile});
     print('Response status: ${response.statusCode}');
     print('Response body: ${response.body}');
@@ -94,7 +95,8 @@ class _PhoneVerification extends State<MyPhoneVerification> {
     setState(() {
       _nextBtnStatus = false;
     });
-    var url = Uri.parse('https://apitest.medrpha.com/api/Default/otpverify');
+    // var url = Uri.parse('https://apitest.medrpha.com/api/Default/otpverify');
+    var url = Uri.parse('https://api.medrpha.com/api/Default/otpverify');
     var response = await http.post(
       url,
       body: {
