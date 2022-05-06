@@ -20,8 +20,8 @@ class MyProductDetails extends StatelessWidget {
     double margin = ConstantWidget.getScreenPercentSize(context, 2);
     print('The value passed was ${p_id} & ${price_id}');
     // TODO: change product image path
-    //final base_url = 'https://partnertest.medrpha.com/product_image/';
-    const base_url = "https://partner.medrpha.com/product_image/";
+    final base_url = 'https://partnertest.medrpha.com/product_image/';
+    // const base_url = "https://partner.medrpha.com/product_image/";
     final ProductDetailsController pdC =
         ProductDetailsController(p_id: p_id, price_id: price_id);
     pdC.loadProductDetails();

@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class Product {
-  static const base_url = "https://partner.medrpha.com/product_image/";
+  // static const base_url = "https://partner.medrpha.com/product_image/";
+  static const base_url = 'https://partnertest.medrpha.com/product_image/';
   String product_img,
       product_name,
       categorystr,
