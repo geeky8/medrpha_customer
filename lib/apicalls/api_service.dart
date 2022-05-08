@@ -434,7 +434,8 @@ class ApiService {
       int paymentMode,
       int payLater,
       double finalPrice}) async {
-    var url = Uri.parse('https://test.medrpha.com/api/checkout/checkout');
+    // var url = Uri.parse('https://test.medrpha.com/api/checkout/checkout');
+    var url = Uri.parse('https://medrpha.com/api/checkout/checkout');
     Map jsonBody = {
       "sessid": sessionID,
       "paymode": paymentMode.toString(),

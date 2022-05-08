@@ -1,8 +1,8 @@
 import 'package:get/get.dart';
 
 class Product {
-  // static const base_url = "https://partner.medrpha.com/product_image/";
-  static const base_url = 'https://partnertest.medrpha.com/product_image/';
+  static const base_url = "https://partner.medrpha.com/product_image/";
+  // static const base_url = 'https://partnertest.medrpha.com/product_image/';
   String product_img,
       product_name,
       categorystr,

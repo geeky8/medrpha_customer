@@ -106,8 +106,8 @@ class MyOrderDetails extends StatelessWidget {
     Razorpay _razorpay;
 
     ///TODO:  Change the image url
-    // const base_url = "https://partner.medrpha.com/product_image/";
-    const base_url = "https://partnertest.medrpha.com/product_image/";
+    const base_url = "https://partner.medrpha.com/product_image/";
+    // const base_url = "https://partnertest.medrpha.com/product_image/";
     // print('creatinging order details controller for order ID ${orderId}');
 
     //const base_url_pdf = " https://test.medrpha.com/InvoicePDF/";

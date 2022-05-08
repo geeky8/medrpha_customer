@@ -32,8 +32,8 @@ class MyCheckoutPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // TODO: change product image path
-    // const base_url = "https://partner.medrpha.com/product_image/";
-    const base_url = "https://partnertest.medrpha.com/product_image/";
+    const base_url = "https://partner.medrpha.com/product_image/";
+    // const base_url = "https://partnertest.medrpha.com/product_image/";
     // print('creatinging order details controller for order ID ${orderId}');
     final CustomerController cust = Get.find<CustomerController>();
     final CartController cc = Get.find<CartController>();

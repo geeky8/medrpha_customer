@@ -17,8 +17,8 @@ String productToJson(List<Product> data) =>
 
 class Product {
   // TODO: change product image path
-  // static const base_url = "https://partnertest.medrpha.com/product_image/";
-  static const base_url = 'https://partnertest.medrpha.com/product_image/';
+  static const base_url = "https://partner.medrpha.com/product_image/";
+  // static const base_url = 'https://partnertest.medrpha.com/product_image/';
   Product({
     this.pid,
     this.wpid,
